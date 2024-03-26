@@ -10,114 +10,55 @@
  * 
  */
 import PropTypes from 'prop-types';
-import { Card, Fab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { useState } from 'react';
+import { Button, Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Fab, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import Paper from '@mui/material/Paper';
 import Daycard from './day-card';
 
 
-const monthevent = [
-    {
-        "date": "2024-02-26",
-        "type": "Holiday",
-        "description": "Republic Day",
-        "start_time": "00:00",
-        "end_time": "23:59"
-    },
-    {
-        "date": "2024-02-26",
-        "type": "Event",
-        "description": "School Science Fair",
-        "start_time": "09:00",
-        "end_time": "16:00"
-    },
-    {
-        "date": "2024-02-29",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
-    },
-    {
-        "date": "2024-02-02",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
-    },
-    {
-        "date": "2024-02-04",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
-    },
-    {
-        "date": "2024-04-06",
-        "type": "Sports Event",
-        "description": "Inter-school Football Match",
-        "start_time": "14:00",
-        "end_time": "17:00"
-    },
-    {
-        "date": "2024-04-08",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
-    },
-    {
-        "date": "2024-04-10",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
-    },
-    {
-        "date": "2024-04-12",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
-    },
-    {
-        "date": "2024-04-14",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
-    },
-    {
-        "date": "2024-04-16",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
-    },
-    {
-        "date": "2024-04-18",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
-    },
-    {
-        "date": "2024-04-20",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
-    }
-]
 
 
-export default function Calandertab({ monthsh, yearsh }) {
+export default function Calandertab({ monthsh, yearsh, monthevent }) {
     /**
-    *  
+    *     defaults or constants
     */
     const dayArr = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
     let montharr = []
     let monthName = ''
 
+    /**
+    *  for pop up form event handling
+    */
+    const [openx, setOpenx] = useState(false);
+    const [scroll, setScroll] = useState('paper');
+
+    const handleClose = () => {
+        setOpenx(false);
+    }
+
+    const [formData, setFormData] = useState({
+        date: '',
+        type: '',
+        description: '',
+        start_time: '',
+        end_time: '',
+    });
+
+    const popupFormdata = {
+        date: '',
+        type: '',
+        description: '',
+        start_time: '',
+        end_time: '',
+    }
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    /**
+     * function to calcualte the calander days and format them
+     */
     const calculateDays = () => {
 
         let finddate = monthsh + '-' + '01' + '-' + yearsh
@@ -154,61 +95,165 @@ export default function Calandertab({ monthsh, yearsh }) {
     }
 
     /**
-     *   function to find record by date        ----------------------------------
+     *   function to find record by date and formatter and event handlers        ----------------------------------
      */
 
-
-    const findRecordsByDate = (year, month, day) => {
-
-        const formattedMonth = Number(month).toString().padStart(2, '0');
-        const formattedDay = Number(day).toString().padStart(2, '0');
-        const formattedDate = `${year}-${formattedMonth}-${formattedDay}`;
-        return monthevent.filter(record => record.date === formattedDate)
-
+    const dataFormatterYYYYMMDD = (year, month, day) => {
+        const formattedMonth = Number(month).toString().padStart(2, '0')
+        const formattedDay = Number(day).toString().padStart(2, '0')
+        const formattedDate = `${year}-${formattedMonth}-${formattedDay}`
+        return formattedDate
     }
+
+    // find the records for given date 
+    const findRecordsByDate = (year, month, day) => {
+        const fmtDt = dataFormatterYYYYMMDD(year, month, day)
+        return monthevent.filter(record => record.date === fmtDt)
+    }
+
+    const handleEditform = (year, month, day) => {
+        const fmtDt = dataFormatterYYYYMMDD(year, month, day)
+        popupFormdata.date = fmtDt
+        setFormData(popupFormdata)
+        setOpenx(true);
+    }
+
+
+    const handleUpdatedate = () => {
+        monthevent.push(formData)
+        //  data base update code here    ----------------------------------->>>>>>>>>   important     <<<<<<<<<<   -----
+        setOpenx(false);
+    }
+
+
+
+    /**
+     *    ---------------------------------------------
+     */
 
     calculateDays()
 
 
     return (
-
-        <Card sx={{ padding: '15px' }}>
-            <Typography variant='h5'>{monthName} , {yearsh}</Typography>
-            <TableContainer component={Paper}>
-                <Table aria-label="schedulerCalander">
-                    <TableHead>
-                        <TableRow>
-                            {dayArr.map(dayVal => (
-                                <TableCell
-                                    align="center"
-                                    sx={{ border: '10px solid #F2F4F3', backgroundColor: '#99DDFF' }}>
-                                    {dayVal}
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {montharr.map(monX => (
-                            <TableRow key={monX} >
-                                {monX.map(dayNum => (
-                                    <TableCell sx={{ border: '10px solid #F2F4F3', backgroundColor: '#FFF', padding: '5px'}}>                                        
-                                        {(dayNum === 0) ? '' : 
-                                        <Daycard 
-                                        dayX={dayNum} 
-                                        eventArr={findRecordsByDate(yearsh, monthsh, dayNum)} 
-                                        ssx={{ marginLeft: '0px', marginTop: '0px' }}
-                                        />}
+        <>
+            <Card sx={{ padding: '15px' }}>                
+                <TableContainer component={Paper}>
+                    <Table aria-label="schedulerCalander">
+                        <TableHead>
+                            <TableRow>
+                                {dayArr.map(dayVal => (
+                                    <TableCell
+                                        align="center"
+                                        sx={{ border: '3px solid #fff', backgroundColor: '#F7F7F7', color: 'primary.dark', borderRadius: '15px' }}>
+                                        <Typography variant='h6'>{dayVal}</Typography>
                                     </TableCell>
                                 ))}
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Card>
+                        </TableHead>
+                        <TableBody>
+                            {montharr.map(monX => (
+                                <TableRow key={monX} >
+                                    {monX.map(dayNum => (
+                                        <TableCell sx={{ border: '3px solid #F7F7F7', backgroundColor: '#FFF', padding: '5px' }}>
+                                            {(dayNum === 0) ? '' :
+                                                <Daycard
+                                                    dayX={dayNum}
+                                                    eventArr={findRecordsByDate(yearsh, monthsh, dayNum)}
+                                                    handlePopupedit={(event) => handleEditform(yearsh, monthsh, dayNum)}
+                                                    ssx={{ marginLeft: '0px', marginTop: '0px' }}
+                                                />}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Card>
+
+
+
+            <Dialog
+                open={openx}
+                onClose={handleClose}
+                scroll={scroll}
+                aria-labelledby="scroll-dialog-title"
+                aria-describedby="scroll-dialog-description"
+            >
+                <DialogTitle id="scroll-dialog-title">
+                    <Typography color='primary' variant='h6'> Event Date : {formData.date}</Typography>
+                </DialogTitle>
+                <DialogContent dividers={scroll === 'paper'}>
+                    <DialogContentText
+                        id="scroll-dialog-description"
+                        tabIndex={-1}
+                    >
+
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Type"
+                                    name="type"
+                                    value={formData.type}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label="Description"
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    label="Start Time"
+                                    type="time"
+                                    name="start_time"
+                                    value={formData.start_time}
+                                    onChange={handleChange}
+                                    InputLabelProps={{ shrink: true }}
+                                    inputProps={{
+                                        step: 300, // 5 min
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    fullWidth
+                                    label="End Time"
+                                    type="time"
+                                    name="end_time"
+                                    value={formData.end_time}
+                                    onChange={handleChange}
+                                    InputLabelProps={{ shrink: true }}
+                                    inputProps={{
+                                        step: 300, // 5 min
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
+
+
+
+                        <Typography>Disabling Institution with date : </Typography>
+
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="outlined" onClick={handleClose}>Cancel</Button>
+                    <Button variant="outlined" onClick={handleUpdatedate}>Update</Button>
+                </DialogActions>
+            </Dialog>
+        </>
     )
 }
 Calandertab.propTypes = {
     monthsh: PropTypes.any,
-    yearsh: PropTypes.any
+    yearsh: PropTypes.any,
+    monthevent: PropTypes.any
 };
