@@ -11,7 +11,7 @@
  */
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { Button, Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Fab, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Fab, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import Paper from '@mui/material/Paper';
 import Daycard from './day-card';
 
@@ -136,41 +136,35 @@ export default function Calandertab({ monthsh, yearsh, monthevent }) {
 
     return (
         <>
-            <Card sx={{ padding: '15px' }}>                
-                <TableContainer component={Paper}>
-                    <Table aria-label="schedulerCalander">
-                        <TableHead>
-                            <TableRow>
-                                {dayArr.map(dayVal => (
-                                    <TableCell
-                                        align="center"
-                                        sx={{ border: '3px solid #fff', backgroundColor: '#F7F7F7', color: 'primary.dark', borderRadius: '15px' }}>
-                                        <Typography variant='h6'>{dayVal}</Typography>
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {montharr.map(monX => (
-                                <TableRow key={monX} >
-                                    {monX.map(dayNum => (
-                                        <TableCell sx={{ border: '3px solid #F7F7F7', backgroundColor: '#FFF', padding: '5px' }}>
-                                            {(dayNum === 0) ? '' :
-                                                <Daycard
-                                                    dayX={dayNum}
-                                                    eventArr={findRecordsByDate(yearsh, monthsh, dayNum)}
-                                                    handlePopupedit={(event) => handleEditform(yearsh, monthsh, dayNum)}
-                                                    ssx={{ marginLeft: '0px', marginTop: '0px' }}
-                                                />}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
+            <Box sx={{ padding: '15px' }}>
+                <table style={{ border: '1px solid #c0c0c0', borderCollapse: 'collapse', width: '100%', minHeight: '90vh' }}>
+                    <tr>
+                        {dayArr.map(dayVal => (
+                            <td
+                                align="center"
+                                style={{ border: '1px solid #fff', backgroundColor: '#F7F7F7', color: 'primary.dark', borderRadius: '5px', padding: '0px' }}>
+                                <Typography variant='body1'>{dayVal}</Typography>
+                            </td>
+                        ))}
+                    </tr>
+                    {montharr.map(monX => (
+                        <tr>
+                            {monX.map(dayNum => (
+                                <td style={{ border: '1px solid #C0C0C0', backgroundColor: '#FFF', padding: '5px' }}>
+                                    {(dayNum === 0) ? '' :
+                                        <Daycard
+                                            dayX={dayNum}
+                                            eventArr={findRecordsByDate(yearsh, monthsh, dayNum)}
+                                            handlePopupedit={(event) => handleEditform(yearsh, monthsh, dayNum)}
+                                            sx={{ marginLeft: '0px', marginTop: '0px' }}
+                                        />}
+                                </td>
                             ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </Card>
+                        </tr>
+                    ))}
+                </table>
 
+            </Box>
 
 
             <Dialog

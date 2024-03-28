@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
-
 import Typography from '@mui/material/Typography';
-import { Box, Paper, Stack } from '@mui/material';
+import { Box, Paper, Stack, TextField } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -34,8 +33,10 @@ export default function Daycard({ dayX, eventArr, handlePopupedit }) {
                 textAlign: 'left',
                 minHeight: '100px',
                 minWidth: '100px',
-            }}>
-                <Typography variant='h5' sx={{ marginLeft: '0px', marginTop: '0px' }}>{dayX}</Typography>
+            }}
+                onClick={handlePopupedit}
+            >
+                <Typography variant='body1' sx={{ marginLeft: '0px', marginTop: '0px' }}>{dayX}</Typography>
                 {eventArr.map(dataX => (
                     <>
 
@@ -55,18 +56,13 @@ export default function Daycard({ dayX, eventArr, handlePopupedit }) {
                                 backgroundColor: `${dayshade1}`,
                                 padding: '5px',
                                 maxHeight: '200px',
-
-                            }}>
+                                cursor: 'pointer'
+                            }}                            
+                            >
                                 <Stack direction="row">
                                     <Typography variant='body2'>
                                         {dataX.type}
                                     </Typography>
-                                    <IconButton aria-label="delete" size="small" sx={{ float: 'right' }}>
-                                        <DeleteIcon fontSize="inherit" />
-                                    </IconButton>
-                                    <IconButton aria-label="delete" size="small" sx={{ float: 'right' }}>
-                                        <EditIcon fontSize="inherit" />
-                                    </IconButton>
                                 </Stack>
                             </Paper>
                         </HtmlTooltip>
@@ -74,10 +70,7 @@ export default function Daycard({ dayX, eventArr, handlePopupedit }) {
                     </>
                 ))}
 
-            </Box>
-            <IconButton aria-label="delete" size="medium" sx={{ float: 'right' }} onClick={handlePopupedit}>
-                <ControlPointIcon fontSize="inherit" color="primary" />
-            </IconButton>
+            </Box>           
         </>
     )
 }

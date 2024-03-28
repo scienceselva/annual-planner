@@ -1,12 +1,14 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { Accordion, AccordionDetails, AccordionSummary, Alert, Box, Card, Container, Divider, Fab, Grid, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Alert, AppBar, Box, Card, Container, Divider, Fab, FormControl, Grid, IconButton, Menu, MenuItem, Select, Typography } from "@mui/material";
 import { DateCalendar, DayCalendarSkeleton, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from 'dayjs';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import Calandertab from './planner-comp/calandertab';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 
 
 // sample data from DB for each month
@@ -142,27 +144,43 @@ export default function Planner() {
 
     const monthSelctionarray = findRecordsByMonth()
 
+    const [age, setAge] = React.useState('');
+
+    const handleChange = (event) => {
+      setAge(event.target.value);
+    };
+
     return (
 
-        <Container maxWidth='xl'>
-            <Box
-                sx={{ width: '100%', backgroundColor: '#F7F7F7', alignItems: 'center', borderRadius: '15px' }}   >
+        <>
+            <AppBar position='static' sx={{ backgroundColor: '#F7F7F7' }}>
+
                 <Typography variant='h5' color={'primary.dark'}>
                     <Grid container spacing={0}>
 
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={4}>
                             <Box
                                 sx={{
                                     width: '200px',
                                     padding: '10px',
-                                    borderRadius: 2,
-                                    border: '1px solid #C0C0C0'
+                                    borderRadius: 1,
+                                    border: '1px solid #c0c0c0'
                                 }}
                             >
                                 Annual Planner
                             </Box>
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={2}>
+                            <Box sx={{ padding: '5px' }}>
+                                <IconButton aria-label="delete" size="medium" sx={{ float: 'right' }} >
+                                    <NavigateNextIcon fontSize="inherit" color="#fff" />
+                                </IconButton>
+                                <IconButton aria-label="delete" size="medium" sx={{ float: 'right' }} >
+                                    <NavigateBeforeIcon fontSize="inherit" color="#fff" />
+                                </IconButton>
+                            </Box>
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
                             <Box
                                 sx={{
                                     width: '200px',
@@ -173,54 +191,68 @@ export default function Planner() {
                                 {monthName}-{selectedYear}
                             </Box>
                         </Grid>
+                        <Grid item xs={12} sm={2}>
+                            <Box>
+                                <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                                    <Select
+                                        value={age}
+                                        onChange={handleChange}
+                                        displayEmpty
+                                        inputProps={{ 'aria-label': 'Without label' }}
+                                    >                                       
+                                        <MenuItem value={10}>Month</MenuItem>
+                                        <MenuItem value={20}>Week</MenuItem>
+                                        <MenuItem value={30}>Day</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Box>
+                        </Grid>
                     </Grid>
                 </Typography>
-            </Box>
+            </AppBar>
 
-            <Grid container spacing={0}>
+            <Grid container spacing={1}>
 
                 <Grid item xs={12} sm={3}>
-                    <Card sx={{ padding: '15px' }}>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
 
-                            <DateCalendar
-                                minDate={dayjs('04/01/2023')}
-                                maxDate={dayjs('04/30/2024')}
-                                onChange={(newValue) => {
-                                    setDateselect(newValue)
-                                }}
-                                onMonthChange={handleDatechange}
-                                renderLoading={() => <DayCalendarSkeleton />}
-                            />
-                        </LocalizationProvider>
-                        <Typography variant='h5'> Events</Typography>
-                        
-                            {monthSelctionarray.map(monthValue => (
-                                <>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+
+                        <DateCalendar
+                            minDate={dayjs('04/01/2023')}
+                            maxDate={dayjs('04/30/2024')}
+                            onChange={(newValue) => {
+                                setDateselect(newValue)
+                            }}
+                            onMonthChange={handleDatechange}
+                            renderLoading={() => <DayCalendarSkeleton />}
+                        />
+                    </LocalizationProvider>
+                    <Typography variant='h5'> Up coming Events</Typography>
+
+                    {monthSelctionarray.map(monthValue => (
+                        <>
 
 
-                                    <Accordion sx={{ backgroundColor: '#F7F7F7', border: '0px solid #fff' }}>
-                                        <AccordionSummary
-                                            expandIcon={<ExpandMoreIcon />}
-                                            aria-controls="panel1-content"
-                                            id="panel1-header"
-                                        >
-                                            <Typography color={'primary.dark'}>{monthValue.date} | {monthValue.type}</Typography>
-                                        </AccordionSummary>
-                                        <AccordionDetails>
-                                            <Typography>
-                                                {monthValue.start_time} to {monthValue.end_time}
-                                            </Typography>
-                                            <Typography>
-                                                {monthValue.description}
-                                            </Typography>
-                                        </AccordionDetails>
-                                    </Accordion>
+                            <Accordion sx={{ backgroundColor: '#F7F7F7', border: '0px solid #fff', borderRadius: '5px' }}>
+                                <AccordionSummary
+                                    expandIcon={<ExpandMoreIcon />}
+                                    aria-controls="panel1-content"
+                                    id="panel1-header"
+                                >
+                                    <Typography color={'primary.dark'}>{monthValue.date} | {monthValue.type}</Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <Typography>
+                                        {monthValue.start_time} to {monthValue.end_time}
+                                    </Typography>
+                                    <Typography>
+                                        {monthValue.description}
+                                    </Typography>
+                                </AccordionDetails>
+                            </Accordion>
 
-                                </>
-                            ))}
-                        
-                    </Card>
+                        </>
+                    ))}
                 </Grid>
 
                 <Grid item xs={12} sm={9}>
@@ -233,6 +265,6 @@ export default function Planner() {
 
             </Grid>
 
-        </Container>
+        </>
     )
 }
