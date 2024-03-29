@@ -1,76 +1,83 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
-import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { Box, Paper, Stack, TextField } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import ControlPointIcon from '@mui/icons-material/ControlPoint';
-import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
+import Popover from '@mui/material/Popover';
+import Popupevent from './popupevent';
 
-const HtmlTooltip = styled(({ className, ...props }) => (
-    <Tooltip {...props} classes={{ popper: className }} arrow enterTouchDelay={0} />
-))(({ theme }) => ({
-    [`& .${tooltipClasses.tooltip}`]: {
-        backgroundColor: '#C5FCF0',
-        color: 'rgba(0, 0, 0, 0.87)',
-        maxWidth: 220,
-        fontSize: theme.typography.pxToRem(12),
-        border: '2px solid #C0C0C0',
-    },
-}));
 
 export default function Daycard({ dayX, eventArr, handlePopupedit }) {
 
-    const dayshade = '#0BC199'
-    const dayshade1 = '#C5FCF0'
+    const [anchorEl, setAnchorEl] = React.useState(false);
+
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleCloseButton = (event) => {        
+        open = false        
+    }
+
+    let open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
 
     return (
         <>
 
-            <Box sx={{
-                textAlign: 'left',
-                minHeight: '100px',
-                minWidth: '100px',
-            }}
-                onClick={handlePopupedit}
-            >
-                <Typography variant='body1' sx={{ marginLeft: '0px', marginTop: '0px' }}>{dayX}</Typography>
-                {eventArr.map(dataX => (
+            <Box sx={{ minHeight: '100px', minWidth: '100px', textAlign: 'center' }}>
+
+                <Typography variant='body1'>{dayX}</Typography>
+                {eventArr.map((dataX, index) => (
                     <>
-
-                        <HtmlTooltip
-                            title={
-                                <React.Fragment>
-                                    <Typography color="inherit" variant='body1'>{dataX.type} </Typography>
-                                    <b> {dataX.start_time} to {dataX.end_time}</b><br />
-                                    {dataX.description}
-                                </React.Fragment>
-                            }
-                        >
-
-                            <Paper sx={{
+                        <Paper
+                            key={index}
+                            onClick={handleClick}
+                            sx={{
                                 textAlign: 'left',
-                                borderBottom: `5px solid ${dayshade}`,
-                                backgroundColor: `${dayshade1}`,
+                                borderBottom: `5px solid ${dataX.colorScheme}`,
+                                backgroundColor: `rgb(from ${dataX.colorScheme} r g b / 35%)`,
                                 padding: '5px',
                                 maxHeight: '200px',
-                                cursor: 'pointer'
-                            }}                            
-                            >
-                                <Stack direction="row">
-                                    <Typography variant='body2'>
-                                        {dataX.type}
-                                    </Typography>
-                                </Stack>
-                            </Paper>
-                        </HtmlTooltip>
-                        <br />
+                                cursor: 'pointer',
+                            }}
+                        >
+                            <Stack direction="row">
+                                <Typography variant='body2'>
+                                    {dataX.type}
+                                </Typography>
+                            </Stack>
+                        </Paper>
+                        <Popover
+                            id={id}
+                            open={open}
+                            anchorEl={anchorEl}
+                            onClose={handleClose}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                        >
+                            <Popupevent
+                                dataPass={dataX}
+                                handleClosex={handleClose}
+                            />
+                        </Popover>
                     </>
                 ))}
 
-            </Box>           
+
+
+            </Box >
         </>
     )
 }

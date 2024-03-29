@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { Accordion, AccordionDetails, AccordionSummary, Alert, AppBar, Box, Card, Container, Divider, Fab, FormControl, Grid, IconButton, Menu, MenuItem, Select, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Alert, AppBar, Box, Card, Container, Divider, Drawer, Fab, FormControl, Grid, IconButton, Menu, MenuItem, Select, Stack, Typography } from "@mui/material";
 import { DateCalendar, DayCalendarSkeleton, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from 'dayjs';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -9,106 +10,207 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Calandertab from './planner-comp/calandertab';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-
+import Weekview from './planner-comp/weekview';
+import Dayview from './planner-comp/dayview';
 
 // sample data from DB for each month
-const montheventDB = [
+const eventType = [
     {
-        "date": "2024-02-26",
         "type": "Holiday",
-        "description": "Republic Day",
-        "start_time": "00:00",
-        "end_time": "23:59"
+        "colorScheme": "#7cffc4",
     },
     {
-        "date": "2024-02-26",
+        "type": "Exam",
+        "colorScheme": "#c2d8ff",
+    },
+    {
         "type": "Event",
-        "description": "School Science Fair",
-        "start_time": "09:00",
-        "end_time": "16:00"
+        "colorScheme": "#fdc087",
     },
     {
-        "date": "2024-02-29",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
+        "type": "Seminar",
+        "colorScheme": "#85deff",
     },
     {
-        "date": "2024-02-02",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
-    },
-    {
-        "date": "2024-02-04",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
-    },
-    {
-        "date": "2024-04-06",
-        "type": "Sports Event",
-        "description": "Inter-school Football Match",
-        "start_time": "14:00",
-        "end_time": "17:00"
-    },
-    {
-        "date": "2024-04-08",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
-    },
-    {
-        "date": "2024-04-10",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
-    },
-    {
-        "date": "2024-04-12",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
-    },
-    {
-        "date": "2024-04-14",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
-    },
-    {
-        "date": "2024-04-16",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
-    },
-    {
-        "date": "2024-04-18",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
-    },
-    {
-        "date": "2024-04-20",
-        "type": "Working",
-        "description": "Regular School Day",
-        "start_time": "08:00",
-        "end_time": "15:00"
+        "type": "Event",
+        "colorScheme": "#e0eec6",
     }
 ]
+
+
+const montheventDB = [
+    {
+        "dateFrom": "2024-03-02",
+        "dateTo": "2024-03-08",
+        "type": "Holiday",
+        "description": "Texas Independence Day",
+        "startTime": "00:00",
+        "endTime": "23:59",
+        "fullDayEvent": true,
+        "lastUpdateby": "username",
+        "lastUpdatedtm": "2024-03-02"
+    },
+    {
+        "dateFrom": "2024-03-10",
+        "dateTo": "",
+        "type": "Exam",
+        "description": "Midterm Exam",
+        "startTime": "10:00",
+        "endTime": "12:00",
+        "fullDayEvent": false,
+        "lastUpdateby": "username",
+        "lastUpdatedtm": "2024-03-02"
+    },
+    {
+        "dateFrom": "2024-03-17",
+        "dateTo": "",
+        "type": "Event",
+        "description": "St. Patrick's Day Parade",
+        "startTime": "14:00",
+        "endTime": "15:30",
+        "fullDayEvent": false,
+        "lastUpdateby": "username",
+        "lastUpdatedtm": "2024-03-02"
+    },
+    {
+        "dateFrom": "2024-03-21",
+        "dateTo": "",
+        "type": "Seminar",
+        "description": "Marketing Workshop",
+        "startTime": "09:30",
+        "endTime": "11:30",
+        "fullDayEvent": false,
+        "lastUpdateby": "username",
+        "lastUpdatedtm": "2024-03-02"
+    },
+    {
+        "dateFrom": "2024-03-30",
+        "dateTo": "",
+        "type": "Event",
+        "description": "Fashion Show",
+        "startTime": "18:00",
+        "endTime": "20:00",
+        "fullDayEvent": false,
+        "lastUpdateby": "username",
+        "lastUpdatedtm": "2024-03-02"
+    },
+    {
+        "dateFrom": "2024-04-05",
+        "dateTo": "",
+        "type": "Holiday",
+        "description": "Easter Sunday",
+        "startTime": "00:00",
+        "endTime": "23:59",
+        "fullDayEvent": true,
+        "lastUpdateby": "username",
+        "lastUpdatedtm": "2024-03-02"
+    },
+    {
+        "dateFrom": "2024-04-12",
+        "dateTo": "",
+        "type": "Exam",
+        "description": "Final Exams Begin",
+        "startTime": "09:00",
+        "endTime": "11:30",
+        "fullDayEvent": false,
+        "lastUpdateby": "username",
+        "lastUpdatedtm": "2024-03-02"
+    },
+    {
+        "dateFrom": "2024-04-19",
+        "dateTo": "",
+        "type": "Event",
+        "description": "Technology Conference",
+        "startTime": "10:30",
+        "endTime": "12:30",
+        "fullDayEvent": false,
+        "lastUpdateby": "username",
+        "lastUpdatedtm": "2024-03-02"
+    },
+    {
+        "dateFrom": "2024-04-22",
+        "dateTo": "",
+        "type": "Seminar",
+        "description": "Leadership Development Program",
+        "startTime": "13:00",
+        "endTime": "15:00",
+        "fullDayEvent": false,
+        "lastUpdateby": "username",
+        "lastUpdatedtm": "2024-03-02"
+    },
+    {
+        "dateFrom": "2024-04-30",
+        "dateTo": "",
+        "type": "Event",
+        "description": "Art Exhibition Opening",
+        "startTime": "16:00",
+        "endTime": "17:30",
+        "fullDayEvent": false,
+        "lastUpdateby": "username",
+        "lastUpdatedtm": "2024-03-02"
+    },
+    {
+        "dateFrom": "2024-05-06",
+        "dateTo": "",
+        "type": "Holiday",
+        "description": "Cinco de Mayo",
+        "startTime": "00:00",
+        "endTime": "23:59",
+        "fullDayEvent": true,
+        "lastUpdateby": "username",
+        "lastUpdatedtm": "2024-03-02"
+    },
+    {
+        "dateFrom": "2024-05-13",
+        "dateTo": "",
+        "type": "Exam",
+        "description": "Final Exams End",
+        "startTime": "09:00",
+        "endTime": "10:30",
+        "fullDayEvent": false,
+        "lastUpdateby": "username",
+        "lastUpdatedtm": "2024-03-02"
+    },
+    {
+        "dateFrom": "2024-05-17",
+        "dateTo": "",
+        "type": "Event",
+        "description": "Food Festival",
+        "startTime": "12:00",
+        "endTime": "14:00",
+        "fullDayEvent": false,
+        "lastUpdateby": "username",
+        "lastUpdatedtm": "2024-03-02"
+    },
+    {
+        "dateFrom": "2024-05-22",
+        "dateTo": "",
+        "type": "Seminar",
+        "description": "Finance Workshop",
+        "startTime": "15:30",
+        "endTime": "17:00",
+        "fullDayEvent": false,
+        "lastUpdateby": "username",
+        "lastUpdatedtm": "2024-03-02"
+    },
+    {
+        "dateFrom": "2024-05-25",
+        "dateTo": "",
+        "type": "Event",
+        "description": "Music Concert",
+        "startTime": "19:00",
+        "endTime": "21:00",
+        "fullDayEvent": false,
+        "lastUpdateby": "username",
+        "lastUpdatedtm": "2024-03-02"
+    }
+]
+
+
 export default function Planner() {
 
     const [dateSelect, setDateselect] = useState(new Date());
-    const [selectedMonth, setSelectedmonth] = useState(new Date().getMonth())
+    const [selectedMonth, setSelectedmonth] = useState(new Date().getMonth() + 1)
     const [selectedYear, setSelectedyear] = useState(new Date().getFullYear())
 
     const handleDatechange = (newValue) => {
@@ -116,17 +218,30 @@ export default function Planner() {
         let dt = new Date(newValue)
         setSelectedmonth(dt.getMonth() + 1)
         setSelectedyear(dt.getFullYear())
+        setDateselect(dt)
 
     };
+
+    const handleAppbardateNav = (direction) => {
+        const newDate = new Date(dateSelect);
+
+        if (direction === 1) {
+            newDate.setMonth(newDate.getMonth() + 1);
+        } else {
+            newDate.setMonth(newDate.getMonth() - 1);
+        }
+        setDateselect(newDate)
+    }
 
     // for header
 
     let finddate = selectedMonth + '-' + '01' + '-' + selectedYear
     const dateSelected = new Date(finddate);
     let monthName = dateSelected.toLocaleString('default', { month: 'long' });
+    //console.log(dateSelect)
 
     /**
-     * get all events fot eh month
+     * get all events fot the month
      */
 
     function findRecordsByMonth() {
@@ -135,47 +250,66 @@ export default function Planner() {
         const fomattedYear = dateSelected.getFullYear()
 
         const filteredRecords = montheventDB.filter(record => {
-            const [recordYear, recordMonth] = record.date.split('-');
+            const [recordYear, recordMonth] = record.dateFrom.split('-');
             return parseInt(recordYear) === fomattedYear && parseInt(recordMonth) === formattedMonth;
         });
+
+        for (let i = 0; i < filteredRecords.length; i += 1) {
+            let type = filteredRecords[i].type
+            let matchEvent = eventType.find(event => event.type === type);
+            filteredRecords[i].colorScheme = matchEvent.colorScheme
+        }
+
         return filteredRecords;
 
     }
 
     const monthSelctionarray = findRecordsByMonth()
 
-    const [age, setAge] = React.useState('');
+    const [calview, setCalview] = React.useState('M');
 
     const handleChange = (event) => {
-      setAge(event.target.value);
+        setCalview(event.target.value);
     };
 
     return (
 
         <>
-            <AppBar position='static' sx={{ backgroundColor: '#F7F7F7' }}>
+            <Box sx={{ backgroundColor: '#F7F7F7', borderBottom: '1px solid #C0C0C0', margin: 0 }}>
 
                 <Typography variant='h5' color={'primary.dark'}>
                     <Grid container spacing={0}>
 
                         <Grid item xs={12} sm={4}>
-                            <Box
-                                sx={{
-                                    width: '200px',
-                                    padding: '10px',
-                                    borderRadius: 1,
-                                    border: '1px solid #c0c0c0'
-                                }}
-                            >
-                                Annual Planner
-                            </Box>
+                            <Stack direction="row">
+                                <Box
+                                    component="img"
+                                    src="eflake.svg"
+                                    sx={{
+                                        width: '150px',
+                                        padding: '0px',
+                                        borderRadius: 1,
+                                        border: '0px solid #c0c0c0'
+                                    }}
+                                />
+                                <Box
+                                    sx={{
+                                        width: '150px',
+                                        padding: '0px',
+                                        borderRadius: 2,
+                                        border: '1px solid #c0c0c0',
+                                    }}
+                                >
+                                    <Typography variant='body1' color={'primary.dark'} sx={{ padding: '15px' }}>Annual Planner</Typography>
+                                </Box>
+                            </Stack>
                         </Grid>
                         <Grid item xs={12} sm={2}>
                             <Box sx={{ padding: '5px' }}>
-                                <IconButton aria-label="delete" size="medium" sx={{ float: 'right' }} >
+                                <IconButton aria-label="delete" size="medium" sx={{ float: 'right' }} onClick={(e) => handleAppbardateNav(1)}>
                                     <NavigateNextIcon fontSize="inherit" color="#fff" />
                                 </IconButton>
-                                <IconButton aria-label="delete" size="medium" sx={{ float: 'right' }} >
+                                <IconButton aria-label="delete" size="medium" sx={{ float: 'right' }} onClick={(e) => handleAppbardateNav(0)}>
                                     <NavigateBeforeIcon fontSize="inherit" color="#fff" />
                                 </IconButton>
                             </Box>
@@ -195,31 +329,32 @@ export default function Planner() {
                             <Box>
                                 <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                                     <Select
-                                        value={age}
+                                        value={calview}
                                         onChange={handleChange}
                                         displayEmpty
                                         inputProps={{ 'aria-label': 'Without label' }}
-                                    >                                       
-                                        <MenuItem value={10}>Month</MenuItem>
-                                        <MenuItem value={20}>Week</MenuItem>
-                                        <MenuItem value={30}>Day</MenuItem>
+                                    >
+
+                                        <MenuItem value='M'>Month</MenuItem>
+                                        <MenuItem value='W'>Week</MenuItem>
+                                        <MenuItem value='D'>Day</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Box>
                         </Grid>
                     </Grid>
                 </Typography>
-            </AppBar>
+            </Box>
 
-            <Grid container spacing={1}>
+            <Grid container spacing={0}>
 
                 <Grid item xs={12} sm={3}>
+
 
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
 
                         <DateCalendar
-                            minDate={dayjs('04/01/2023')}
-                            maxDate={dayjs('04/30/2024')}
+                            value={dayjs(dateSelect)}
                             onChange={(newValue) => {
                                 setDateselect(newValue)
                             }}
@@ -228,22 +363,22 @@ export default function Planner() {
                         />
                     </LocalizationProvider>
                     <Typography variant='h5'> Up coming Events</Typography>
-
-                    {monthSelctionarray.map(monthValue => (
+                    <Divider /><br />
+                    {monthSelctionarray.map((monthValue, index) => (
                         <>
 
-
-                            <Accordion sx={{ backgroundColor: '#F7F7F7', border: '0px solid #fff', borderRadius: '5px' }}>
+                            <Accordion key={index} sx={{ backgroundColor: `rgb(from ${monthValue.colorScheme} r g b / 35%)`, border: '0px solid #fff', borderRadius: '5px' }}>
                                 <AccordionSummary
                                     expandIcon={<ExpandMoreIcon />}
                                     aria-controls="panel1-content"
                                     id="panel1-header"
                                 >
-                                    <Typography color={'primary.dark'}>{monthValue.date} | {monthValue.type}</Typography>
+                                    <Typography variant='body1'>{monthValue.dateFrom} | {monthValue.type}</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
+
                                     <Typography>
-                                        {monthValue.start_time} to {monthValue.end_time}
+                                        {monthValue.fullDayEvent ? "Full Day Event" : <>{monthValue.startTime} To {monthValue.endTime} </>}
                                     </Typography>
                                     <Typography>
                                         {monthValue.description}
@@ -256,11 +391,31 @@ export default function Planner() {
                 </Grid>
 
                 <Grid item xs={12} sm={9}>
-                    <Calandertab
-                        monthsh={selectedMonth}
-                        yearsh={selectedYear}
-                        monthevent={montheventDB}
-                    />
+
+                    {(() => {
+                        switch (calview) {
+                            case 'M':
+                                return <Calandertab
+                                    monthsh={selectedMonth}
+                                    yearsh={selectedYear}
+                                    monthevent={montheventDB}
+                                />
+                            case 'W':
+                                return <Weekview
+                                    SelectedDateX={dateSelect}
+                                    eventArr={montheventDB}
+                                />
+                            case 'D':
+                                return <Dayview />
+                            default:
+                                return <Calandertab
+                                    monthsh={selectedMonth}
+                                    yearsh={selectedYear}
+                                    monthevent={montheventDB}
+                                />
+                        }
+                    })()}
+
                 </Grid>
 
             </Grid>

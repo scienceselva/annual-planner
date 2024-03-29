@@ -1,12 +1,5 @@
 /**
- * pallet for calander
- *  
- * #383D3B
- * #EEE5E9
- * #7C7C7C
- * #69DDFF
- * #CEF7A0
- * #F2F4F3
+ *  calander view of events ( Monthly)
  * 
  */
 import PropTypes from 'prop-types';
@@ -25,6 +18,9 @@ export default function Calandertab({ monthsh, yearsh, monthevent }) {
     const dayArr = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
     let montharr = []
     let monthName = ''
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth() + 1
+    const currentDay = currentDate.getDate()
 
     /**
     *  for pop up form event handling
@@ -108,7 +104,7 @@ export default function Calandertab({ monthsh, yearsh, monthevent }) {
     // find the records for given date 
     const findRecordsByDate = (year, month, day) => {
         const fmtDt = dataFormatterYYYYMMDD(year, month, day)
-        return monthevent.filter(record => record.date === fmtDt)
+        return monthevent.filter(record => record.dateFrom === fmtDt)
     }
 
     const handleEditform = (year, month, day) => {
@@ -126,13 +122,11 @@ export default function Calandertab({ monthsh, yearsh, monthevent }) {
     }
 
 
-
     /**
      *    ---------------------------------------------
      */
 
     calculateDays()
-
 
     return (
         <>
@@ -141,108 +135,34 @@ export default function Calandertab({ monthsh, yearsh, monthevent }) {
                     <tr>
                         {dayArr.map(dayVal => (
                             <td
+                                key={dayVal}
                                 align="center"
-                                style={{ border: '1px solid #fff', backgroundColor: '#F7F7F7', color: 'primary.dark', borderRadius: '5px', padding: '0px' }}>
-                                <Typography variant='body1'>{dayVal}</Typography>
+                                style={{ borderLeft: '1px solid #c0c0c0', borderBottom: '1px solid #fff', backgroundColor: '#F7F7F7', color: 'primary.dark', borderRadius: '5px', padding: '0px' }}>
+                                <Typography variant='body2' color={'primary.dark'}>{dayVal}</Typography>
                             </td>
                         ))}
                     </tr>
-                    {montharr.map(monX => (
-                        <tr>
-                            {monX.map(dayNum => (
-                                <td style={{ border: '1px solid #C0C0C0', backgroundColor: '#FFF', padding: '5px' }}>
+                    {montharr.map((monX, index) => (
+                        <tr key={index}>
+                            {monX.map((dayNum, index) => (
+                                <td style={{ border: '1px solid #C0C0C0', backgroundColor: '#FFF', padding: '5px' }} key={index}>
                                     {(dayNum === 0) ? '' :
                                         <Daycard
                                             dayX={dayNum}
                                             eventArr={findRecordsByDate(yearsh, monthsh, dayNum)}
                                             handlePopupedit={(event) => handleEditform(yearsh, monthsh, dayNum)}
-                                            sx={{ marginLeft: '0px', marginTop: '0px' }}
+                                            sx={{ marginTop: '0px' }}
                                         />}
                                 </td>
+
                             ))}
+
                         </tr>
                     ))}
                 </table>
 
             </Box>
 
-
-            <Dialog
-                open={openx}
-                onClose={handleClose}
-                scroll={scroll}
-                aria-labelledby="scroll-dialog-title"
-                aria-describedby="scroll-dialog-description"
-            >
-                <DialogTitle id="scroll-dialog-title">
-                    <Typography color='primary' variant='h6'> Event Date : {formData.date}</Typography>
-                </DialogTitle>
-                <DialogContent dividers={scroll === 'paper'}>
-                    <DialogContentText
-                        id="scroll-dialog-description"
-                        tabIndex={-1}
-                    >
-
-                        <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    label="Type"
-                                    name="type"
-                                    value={formData.type}
-                                    onChange={handleChange}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    label="Description"
-                                    name="description"
-                                    value={formData.description}
-                                    onChange={handleChange}
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Start Time"
-                                    type="time"
-                                    name="start_time"
-                                    value={formData.start_time}
-                                    onChange={handleChange}
-                                    InputLabelProps={{ shrink: true }}
-                                    inputProps={{
-                                        step: 300, // 5 min
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <TextField
-                                    fullWidth
-                                    label="End Time"
-                                    type="time"
-                                    name="end_time"
-                                    value={formData.end_time}
-                                    onChange={handleChange}
-                                    InputLabelProps={{ shrink: true }}
-                                    inputProps={{
-                                        step: 300, // 5 min
-                                    }}
-                                />
-                            </Grid>
-                        </Grid>
-
-
-
-                        <Typography>Disabling Institution with date : </Typography>
-
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button variant="outlined" onClick={handleClose}>Cancel</Button>
-                    <Button variant="outlined" onClick={handleUpdatedate}>Update</Button>
-                </DialogActions>
-            </Dialog>
         </>
     )
 }
