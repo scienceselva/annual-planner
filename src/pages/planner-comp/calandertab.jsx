@@ -149,8 +149,7 @@ export default function Calandertab({ monthsh, yearsh, monthevent }) {
                                     {(dayNum === 0) ? '' :
                                         <Daycard
                                             dayX={dayNum}
-                                            eventArr={findRecordsByDate(yearsh, monthsh, dayNum)}
-                                            handlePopupedit={(event) => handleEditform(yearsh, monthsh, dayNum)}
+                                            eventArr={findRecordsByDate(yearsh, monthsh, dayNum)}                                            
                                             sx={{ marginTop: '0px' }}
                                         />}
                                 </td>

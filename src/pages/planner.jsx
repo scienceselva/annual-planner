@@ -54,7 +54,29 @@ const montheventDB = [
         "dateFrom": "2024-03-10",
         "dateTo": "",
         "type": "Exam",
-        "description": "Midterm Exam",
+        "description": "Midterm Exam 3",
+        "startTime": "11:30",
+        "endTime": "16:00",
+        "fullDayEvent": false,
+        "lastUpdateby": "username",
+        "lastUpdatedtm": "2024-03-02"
+    },
+    {
+        "dateFrom": "2024-03-10",
+        "dateTo": "",
+        "type": "Exam",
+        "description": "Midterm Exam 1",
+        "startTime": "10:00",
+        "endTime": "12:00",
+        "fullDayEvent": false,
+        "lastUpdateby": "username",
+        "lastUpdatedtm": "2024-03-02"
+    },
+    {
+        "dateFrom": "2024-03-10",
+        "dateTo": "",
+        "type": "Event",
+        "description": "Midterm Exam 2",
         "startTime": "10:00",
         "endTime": "12:00",
         "fullDayEvent": false,
@@ -209,6 +231,18 @@ const montheventDB = [
 
 export default function Planner() {
 
+    // Sort input array
+
+    // Sort the array by dateFrom and startTime
+    montheventDB.sort((a, b) => {
+        // Compare dateFrom first
+        if (a.dateFrom !== b.dateFrom) {
+            return a.dateFrom.localeCompare(b.dateFrom);
+        }
+        // If dateFrom is the same, compare startTime
+        return a.startTime.localeCompare(b.startTime);
+    });
+
     const [dateSelect, setDateselect] = useState(new Date());
     const [selectedMonth, setSelectedmonth] = useState(new Date().getMonth() + 1)
     const [selectedYear, setSelectedyear] = useState(new Date().getFullYear())
@@ -346,7 +380,7 @@ export default function Planner() {
                 </Typography>
             </Box>
 
-            <Grid container spacing={0}>
+            <Grid container spacing={1}>
 
                 <Grid item xs={12} sm={3}>
 
@@ -406,7 +440,10 @@ export default function Planner() {
                                     eventArr={montheventDB}
                                 />
                             case 'D':
-                                return <Dayview />
+                                return <Dayview
+                                    SelectedDateX={dateSelect}
+                                    eventArr={montheventDB}
+                                />
                             default:
                                 return <Calandertab
                                     monthsh={selectedMonth}

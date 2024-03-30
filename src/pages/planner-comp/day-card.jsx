@@ -2,30 +2,26 @@ import PropTypes from 'prop-types';
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import { Box, Paper, Stack, TextField } from '@mui/material';
-import Popover from '@mui/material/Popover';
+
 import Popupevent from './popupevent';
 
 
 export default function Daycard({ dayX, eventArr, handlePopupedit }) {
 
-    const [anchorEl, setAnchorEl] = React.useState(false);
+    const [anchorElm, setAnchorEl] = React.useState(false);
 
+    //const [selectedCardindex, setSelectedCindex] = React.useState(0);
+    let selectedCardindex = React.useRef(0);
 
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
+    const handleClick = (event, index) => {
+        setAnchorEl(event.currentTarget)
+        //setSelectedCindex(index)
+        selectedCardindex.current = index
     };
-
 
     const handleClose = () => {
         setAnchorEl(null);
     };
-
-    const handleCloseButton = (event) => {        
-        open = false        
-    }
-
-    let open = Boolean(anchorEl);
-    const id = open ? 'simple-popover' : undefined;
 
     return (
         <>
@@ -37,7 +33,7 @@ export default function Daycard({ dayX, eventArr, handlePopupedit }) {
                     <>
                         <Paper
                             key={index}
-                            onClick={handleClick}
+                            onClick={(e) => handleClick(e, index)}
                             sx={{
                                 textAlign: 'left',
                                 borderBottom: `5px solid ${dataX.colorScheme}`,
@@ -52,31 +48,18 @@ export default function Daycard({ dayX, eventArr, handlePopupedit }) {
                                     {dataX.type}
                                 </Typography>
                             </Stack>
+
                         </Paper>
-                        <Popover
-                            id={id}
-                            open={open}
-                            anchorEl={anchorEl}
-                            onClose={handleClose}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                        >
-                            <Popupevent
-                                dataPass={dataX}
-                                handleClosex={handleClose}
-                            />
-                        </Popover>
                     </>
                 ))}
-
-
-
+                {eventArr.length === 0 ? null :
+                    <Popupevent
+                        dataPass={eventArr}
+                        handleClosex={handleClose}
+                        anchorEl={anchorElm}
+                        inox={selectedCardindex.current}
+                    />
+                }
             </Box >
         </>
     )
