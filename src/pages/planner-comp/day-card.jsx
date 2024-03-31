@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
-import { Box, Paper, Stack, TextField } from '@mui/material';
+import { Box, IconButton, Paper, Stack, TextField } from '@mui/material';
 
 import Popupevent from './popupevent';
 
 
-export default function Daycard({ dayX, eventArr, handlePopupedit }) {
+export default function Daycard({ dayX, eventArr }) {
 
     const [anchorElm, setAnchorEl] = React.useState(false);
-
+    
     //const [selectedCardindex, setSelectedCindex] = React.useState(0);
     let selectedCardindex = React.useRef(0);
 
@@ -22,16 +22,16 @@ export default function Daycard({ dayX, eventArr, handlePopupedit }) {
     const handleClose = () => {
         setAnchorEl(null);
     };
-
+    
     return (
         <>
 
-            <Box sx={{ minHeight: '100px', minWidth: '100px', textAlign: 'center' }}>
-
+            <Box id='testx' sx={{ minHeight: '100%', minWidth: '100px', textAlign: 'center' }}>
                 <Typography variant='body1'>{dayX}</Typography>
                 {eventArr.map((dataX, index) => (
                     <>
-                        <Paper
+                        <Paper   
+                            
                             key={index}
                             onClick={(e) => handleClick(e, index)}
                             sx={{
@@ -45,8 +45,9 @@ export default function Daycard({ dayX, eventArr, handlePopupedit }) {
                         >
                             <Stack direction="row">
                                 <Typography variant='body2'>
-                                    {dataX.type}
+                                    {dataX.type} {dataX.dateTo}
                                 </Typography>
+
                             </Stack>
 
                         </Paper>
@@ -60,13 +61,13 @@ export default function Daycard({ dayX, eventArr, handlePopupedit }) {
                         inox={selectedCardindex.current}
                     />
                 }
-            </Box >
+
+            </Box >            
         </>
     )
 }
 
 Daycard.propTypes = {
     dayX: PropTypes.any,
-    eventArr: PropTypes.any,
-    handlePopupedit: PropTypes.func,
+    eventArr: PropTypes.any,    
 };

@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { Accordion, AccordionDetails, AccordionSummary, Alert, AppBar, Box, Card, Container, Divider, Drawer, Fab, FormControl, Grid, IconButton, Menu, MenuItem, Select, Stack, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Alert, AppBar, Box, Card, CircularProgress, Container, Divider, Drawer, Fab, FormControl, Grid, IconButton, LinearProgress, Menu, MenuItem, Select, Stack, Typography } from "@mui/material";
 import { DateCalendar, DayCalendarSkeleton, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from 'dayjs';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -13,30 +13,9 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Weekview from './planner-comp/weekview';
 import Dayview from './planner-comp/dayview';
 
-// sample data from DB for each month
-const eventType = [
-    {
-        "type": "Holiday",
-        "colorScheme": "#7cffc4",
-    },
-    {
-        "type": "Exam",
-        "colorScheme": "#c2d8ff",
-    },
-    {
-        "type": "Event",
-        "colorScheme": "#fdc087",
-    },
-    {
-        "type": "Seminar",
-        "colorScheme": "#85deff",
-    },
-    {
-        "type": "Event",
-        "colorScheme": "#e0eec6",
-    }
-]
+import { getallEventTypes } from './planner-comp/dbutils';
 
+// sample data from DB for each month
 
 const montheventDB = [
     {
@@ -227,12 +206,10 @@ const montheventDB = [
         "lastUpdatedtm": "2024-03-02"
     }
 ]
-
+let eventType = []
 
 export default function Planner() {
-
-    // Sort input array
-
+    let monthSelctionarray = []
     // Sort the array by dateFrom and startTime
     montheventDB.sort((a, b) => {
         // Compare dateFrom first
@@ -243,6 +220,8 @@ export default function Planner() {
         return a.startTime.localeCompare(b.startTime);
     });
 
+    const [isLoading, setLoading] = useState(true);
+
     const [dateSelect, setDateselect] = useState(new Date());
     const [selectedMonth, setSelectedmonth] = useState(new Date().getMonth() + 1)
     const [selectedYear, setSelectedyear] = useState(new Date().getFullYear())
@@ -252,8 +231,7 @@ export default function Planner() {
         let dt = new Date(newValue)
         setSelectedmonth(dt.getMonth() + 1)
         setSelectedyear(dt.getFullYear())
-        setDateselect(dt)
-
+        setDateselect(dt)        
     };
 
     const handleAppbardateNav = (direction) => {
@@ -264,7 +242,8 @@ export default function Planner() {
         } else {
             newDate.setMonth(newDate.getMonth() - 1);
         }
-        setDateselect(newDate)
+        setDateselect(newDate)        
+
     }
 
     // for header
@@ -298,7 +277,7 @@ export default function Planner() {
 
     }
 
-    const monthSelctionarray = findRecordsByMonth()
+    
 
     const [calview, setCalview] = React.useState('M');
 
@@ -306,8 +285,25 @@ export default function Planner() {
         setCalview(event.target.value);
     };
 
-    return (
+    if(eventType.length > 0){
+        monthSelctionarray = findRecordsByMonth()
+    }
+    
+    useEffect(() => {
+        console.log("test")
 
+        async function getClassData() {
+            eventType = await getallEventTypes()
+            
+            setLoading(false)
+        }
+        if (isLoading) {
+            getClassData()
+        }
+
+    }, []);
+
+    return (
         <>
             <Box sx={{ backgroundColor: '#F7F7F7', borderBottom: '1px solid #C0C0C0', margin: 0 }}>
 
@@ -375,88 +371,91 @@ export default function Planner() {
                                     </Select>
                                 </FormControl>
                             </Box>
+
                         </Grid>
                     </Grid>
                 </Typography>
             </Box>
-
-            <Grid container spacing={1}>
-
-                <Grid item xs={12} sm={3}>
+            {isLoading ? <Box sx={{ width: '100%', marginTop: '20%', marginLeft: '50%' }}><CircularProgress color="inherit" /></Box> : <>
 
 
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <Grid container spacing={1}>
 
-                        <DateCalendar
-                            value={dayjs(dateSelect)}
-                            onChange={(newValue) => {
-                                setDateselect(newValue)
-                            }}
-                            onMonthChange={handleDatechange}
-                            renderLoading={() => <DayCalendarSkeleton />}
-                        />
-                    </LocalizationProvider>
-                    <Typography variant='h5'> Up coming Events</Typography>
-                    <Divider /><br />
-                    {monthSelctionarray.map((monthValue, index) => (
-                        <>
+                    <Grid item xs={12} sm={3}>
 
-                            <Accordion key={index} sx={{ backgroundColor: `rgb(from ${monthValue.colorScheme} r g b / 35%)`, border: '0px solid #fff', borderRadius: '5px' }}>
-                                <AccordionSummary
-                                    expandIcon={<ExpandMoreIcon />}
-                                    aria-controls="panel1-content"
-                                    id="panel1-header"
-                                >
-                                    <Typography variant='body1'>{monthValue.dateFrom} | {monthValue.type}</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
 
-                                    <Typography>
-                                        {monthValue.fullDayEvent ? "Full Day Event" : <>{monthValue.startTime} To {monthValue.endTime} </>}
-                                    </Typography>
-                                    <Typography>
-                                        {monthValue.description}
-                                    </Typography>
-                                </AccordionDetails>
-                            </Accordion>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
 
-                        </>
-                    ))}
+                            <DateCalendar
+                                value={dayjs(dateSelect)}
+                                onChange={(newValue) => {
+                                    setDateselect(newValue)
+                                }}
+                                onMonthChange={handleDatechange}
+                                renderLoading={() => <DayCalendarSkeleton />}
+                            />
+                        </LocalizationProvider>
+                        <Typography variant='h5'> Up coming Events</Typography>
+                        <Divider /><br />
+                        {monthSelctionarray.map((monthValue, index) => (
+                            <>
+
+                                <Accordion key={index} sx={{ backgroundColor: `rgb(from ${monthValue.colorScheme} r g b / 35%)`, border: '0px solid #fff', borderRadius: '5px' }}>
+                                    <AccordionSummary
+                                        expandIcon={<ExpandMoreIcon />}
+                                        aria-controls="panel1-content"
+                                        id="panel1-header"
+                                    >
+                                        <Typography variant='body1'>{monthValue.dateFrom} | {monthValue.type}</Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+
+                                        <Typography>
+                                            {monthValue.fullDayEvent ? "Full Day Event" : <>{monthValue.startTime} To {monthValue.endTime} </>}
+                                        </Typography>
+                                        <Typography>
+                                            {monthValue.description}
+                                        </Typography>
+                                    </AccordionDetails>
+                                </Accordion>
+
+                            </>
+                        ))}
+                    </Grid>
+
+                    <Grid item xs={12} sm={9}>
+
+                        {(() => {
+                            switch (calview) {
+                                case 'M':
+                                    return <Calandertab
+                                        monthsh={selectedMonth}
+                                        yearsh={selectedYear}
+                                        monthevent={montheventDB}
+                                    />
+                                case 'W':
+                                    return <Weekview
+                                        SelectedDateX={dateSelect}
+                                        eventArr={montheventDB}
+                                    />
+                                case 'D':
+                                    return <Dayview
+                                        SelectedDateX={dateSelect}
+                                        eventArr={montheventDB}
+                                    />
+                                default:
+                                    return <Calandertab
+                                        monthsh={selectedMonth}
+                                        yearsh={selectedYear}
+                                        monthevent={montheventDB}
+                                    />
+                            }
+                        })()}
+
+                    </Grid>
+
                 </Grid>
-
-                <Grid item xs={12} sm={9}>
-
-                    {(() => {
-                        switch (calview) {
-                            case 'M':
-                                return <Calandertab
-                                    monthsh={selectedMonth}
-                                    yearsh={selectedYear}
-                                    monthevent={montheventDB}
-                                />
-                            case 'W':
-                                return <Weekview
-                                    SelectedDateX={dateSelect}
-                                    eventArr={montheventDB}
-                                />
-                            case 'D':
-                                return <Dayview
-                                    SelectedDateX={dateSelect}
-                                    eventArr={montheventDB}
-                                />
-                            default:
-                                return <Calandertab
-                                    monthsh={selectedMonth}
-                                    yearsh={selectedYear}
-                                    monthevent={montheventDB}
-                                />
-                        }
-                    })()}
-
-                </Grid>
-
-            </Grid>
-
+            </>}
         </>
     )
 }

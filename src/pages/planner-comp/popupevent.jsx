@@ -8,13 +8,24 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import Popover from '@mui/material/Popover';
 
-export default function Popupevent( {dataPass, handleClosex, anchorEl, inox }) {
+export default function Popupevent({ dataPass, handleClosex, anchorEl, inox }) {
 
     const [formData, setFormData] = useState(dataPass);
 
     const handleChange = (event) => {
+
         const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
+        //setFormData({ ...formData, [name]: value });
+        //console.log(formData)
+
+        setFormData((prevState) => {
+            const newState = [...prevState]
+            // Update the state values of current component to show the changes to user
+            newState[inox][event.target.name] = event.target.value
+            return newState
+          });
+        
+        
     };
 
     const handleUpdates = (flag) => {
@@ -23,12 +34,12 @@ export default function Popupevent( {dataPass, handleClosex, anchorEl, inox }) {
     const handleUpdatedate = () => {
         console.log("Update")
     };
-        
+
     //console.log(formData)
-    
+
     /**
      * for popover functionality to work
-     */    
+     */
     let open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
 

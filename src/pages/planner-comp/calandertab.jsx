@@ -2,12 +2,14 @@
  *  calander view of events ( Monthly)
  * 
  */
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Fab, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import Paper from '@mui/material/Paper';
 import Daycard from './day-card';
-
+import { SettingsInputAntennaTwoTone } from '@mui/icons-material';
+import Popupevent from './popupevent';
 
 
 
@@ -120,13 +122,48 @@ export default function Calandertab({ monthsh, yearsh, monthevent }) {
         //  data base update code here    ----------------------------------->>>>>>>>>   important     <<<<<<<<<<   -----
         setOpenx(false);
     }
-
-
-    /**
-     *    ---------------------------------------------
-     */
-
     calculateDays()
+    /**
+     *    --------------------------------------------- new event popup
+     */
+    const dummyArray = [
+        {
+            "dateFrom": "",
+            "dateTo": "",
+            "type": "Add New Event",
+            "description": "",
+            "startTime": "",
+            "endTime": "",
+            "fullDayEvent": false,
+            "lastUpdateby": "",
+            "lastUpdatedtm": ""
+        }
+    ]
+
+    const [anchorElm, setAnchorEl] = React.useState(false);
+    
+    //const [selectedCardindex, setSelectedCindex] = React.useState(0);
+    let selectedCardindex = React.useRef(0);
+
+    const handleClick = (event, index) => {
+        setAnchorEl(event.currentTarget)
+        //setSelectedCindex(index)
+        selectedCardindex.current = index
+    };
+
+    const handleClosepop = () => {
+        setAnchorEl(null);
+    };
+
+    
+    const handleaddNewEvent = (e, daySel) => {
+
+        let elementID = parseInt(e.target.id)
+        if ((daySel > 0) & (!isNaN(elementID))) {          
+            handleClick(e, 0)
+        }
+
+    }
 
     return (
         <>
@@ -145,11 +182,13 @@ export default function Calandertab({ monthsh, yearsh, monthevent }) {
                     {montharr.map((monX, index) => (
                         <tr key={index}>
                             {monX.map((dayNum, index) => (
-                                <td style={{ border: '1px solid #C0C0C0', backgroundColor: '#FFF', padding: '5px' }} key={index}>
+                                <td id={`${monthsh}${dayNum}`}
+                                    style={{ border: '1px solid #C0C0C0', backgroundColor: '#FFF', padding: '5px', verticalAlign: 'top' }}
+                                    onClick={(e) => handleaddNewEvent(e, dayNum)}>
                                     {(dayNum === 0) ? '' :
                                         <Daycard
                                             dayX={dayNum}
-                                            eventArr={findRecordsByDate(yearsh, monthsh, dayNum)}                                            
+                                            eventArr={findRecordsByDate(yearsh, monthsh, dayNum)}
                                             sx={{ marginTop: '0px' }}
                                         />}
                                 </td>
@@ -162,6 +201,12 @@ export default function Calandertab({ monthsh, yearsh, monthevent }) {
 
             </Box>
 
+            <Popupevent
+                dataPass={dummyArray}
+                handleClosex={handleClosepop}
+                anchorEl={anchorElm}
+                inox={selectedCardindex.current}
+            />
         </>
     )
 }
