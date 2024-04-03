@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
-import { Box, IconButton, Paper, Stack, TextField } from '@mui/material';
+import { Box, IconButton, Paper, Stack, TextField, Tooltip } from '@mui/material';
+import DynamicFeedOutlinedIcon from '@mui/icons-material/DynamicFeedOutlined';
 
 import Popupevent from './popupevent';
 
@@ -9,7 +10,7 @@ import Popupevent from './popupevent';
 export default function Daycard({ dayX, eventArr }) {
 
     const [anchorElm, setAnchorEl] = React.useState(false);
-    
+
     //const [selectedCardindex, setSelectedCindex] = React.useState(0);
     let selectedCardindex = React.useRef(0);
 
@@ -22,7 +23,14 @@ export default function Daycard({ dayX, eventArr }) {
     const handleClose = () => {
         setAnchorEl(null);
     };
-    
+
+    const dateCheckG = (fDt, tDt) => {
+        if (new Date(fDt) < new Date(tDt)) {
+            return true
+        }
+        return false
+    }
+
     return (
         <>
 
@@ -30,8 +38,7 @@ export default function Daycard({ dayX, eventArr }) {
                 <Typography variant='body1'>{dayX}</Typography>
                 {eventArr.map((dataX, index) => (
                     <>
-                        <Paper   
-                            
+                        <Paper
                             key={index}
                             onClick={(e) => handleClick(e, index)}
                             sx={{
@@ -43,10 +50,13 @@ export default function Daycard({ dayX, eventArr }) {
                                 cursor: 'pointer',
                             }}
                         >
-                            <Stack direction="row">
+                            <Stack direction="row" spacing={2}>
                                 <Typography variant='body2'>
-                                    {dataX.type} {dataX.dateTo}
+                                    {dataX.type}
                                 </Typography>
+                                {dateCheckG(dataX.dateFrom, dataX.dateTo) ?
+                                    <><Tooltip title="Multi-dated event"><DynamicFeedOutlinedIcon /></Tooltip></>
+                                    : ''}
 
                             </Stack>
 
@@ -57,17 +67,20 @@ export default function Daycard({ dayX, eventArr }) {
                     <Popupevent
                         dataPass={eventArr}
                         handleClosex={handleClose}
+                        handleClickx={handleClick}
                         anchorEl={anchorElm}
                         inox={selectedCardindex.current}
+                      
                     />
                 }
 
-            </Box >            
+            </Box >
         </>
     )
 }
 
 Daycard.propTypes = {
     dayX: PropTypes.any,
-    eventArr: PropTypes.any,    
+    eventArr: PropTypes.any
+    
 };

@@ -5,13 +5,9 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Fab, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material";
-import Paper from '@mui/material/Paper';
+import { Box, Typography } from "@mui/material";
 import Daycard from './day-card';
-import { SettingsInputAntennaTwoTone } from '@mui/icons-material';
 import Popupevent from './popupevent';
-
-
 
 export default function Calandertab({ monthsh, yearsh, monthevent }) {
     /**
@@ -20,40 +16,25 @@ export default function Calandertab({ monthsh, yearsh, monthevent }) {
     const dayArr = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
     let montharr = []
     let monthName = ''
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth() + 1
-    const currentDay = currentDate.getDate()
 
     /**
-    *  for pop up form event handling
-    */
-    const [openx, setOpenx] = useState(false);
-    const [scroll, setScroll] = useState('paper');
-
-    const handleClose = () => {
-        setOpenx(false);
-    }
-
-    const [formData, setFormData] = useState({
-        date: '',
-        type: '',
-        description: '',
-        start_time: '',
-        end_time: '',
-    });
-
-    const popupFormdata = {
-        date: '',
-        type: '',
-        description: '',
-        start_time: '',
-        end_time: '',
-    }
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
+     *    --------------------------------------------- new event popup
+     */
+    const [dummyArray, setDummyarray] = useState([
+        {
+            _id: "",
+            dateFrom: "",
+            dateTo: "",
+            type: "",
+            description: "",
+            startTime: "00:00",
+            endTime: "23:59",
+            fullDayEvent: false,
+            lastUpdateby: "",
+            lastUpdatedtm: "",
+            level: ""
+        }
+    ])
     /**
      * function to calcualte the calander days and format them
      */
@@ -109,57 +90,31 @@ export default function Calandertab({ monthsh, yearsh, monthevent }) {
         return monthevent.filter(record => record.dateFrom === fmtDt)
     }
 
-    const handleEditform = (year, month, day) => {
-        const fmtDt = dataFormatterYYYYMMDD(year, month, day)
-        popupFormdata.date = fmtDt
-        setFormData(popupFormdata)
-        setOpenx(true);
-    }
-
-
-    const handleUpdatedate = () => {
-        monthevent.push(formData)
-        //  data base update code here    ----------------------------------->>>>>>>>>   important     <<<<<<<<<<   -----
-        setOpenx(false);
-    }
     calculateDays()
-    /**
-     *    --------------------------------------------- new event popup
-     */
-    const dummyArray = [
-        {
-            "dateFrom": "",
-            "dateTo": "",
-            "type": "Add New Event",
-            "description": "",
-            "startTime": "",
-            "endTime": "",
-            "fullDayEvent": false,
-            "lastUpdateby": "",
-            "lastUpdatedtm": ""
-        }
-    ]
+
 
     const [anchorElm, setAnchorEl] = React.useState(false);
-    
+
     //const [selectedCardindex, setSelectedCindex] = React.useState(0);
     let selectedCardindex = React.useRef(0);
 
     const handleClick = (event, index) => {
+
         setAnchorEl(event.currentTarget)
         //setSelectedCindex(index)
         selectedCardindex.current = index
+
     };
 
     const handleClosepop = () => {
         setAnchorEl(null);
     };
 
-    
-    const handleaddNewEvent = (e, daySel) => {
 
+    const handleaddNewEvent = (e, daySel) => {
+        dummyArray[0].dateFrom = `${yearsh}-${monthsh}-${daySel}`        
         let elementID = parseInt(e.target.id)
-        if ((daySel > 0) & (!isNaN(elementID))) {          
+        if ((daySel > 0) & (!isNaN(elementID))) {
             handleClick(e, 0)
         }
 
@@ -202,10 +157,12 @@ export default function Calandertab({ monthsh, yearsh, monthevent }) {
             </Box>
 
             <Popupevent
-                dataPass={dummyArray}
+                dataPass={[...dummyArray]}
                 handleClosex={handleClosepop}
+                handleClickx={handleClick}
                 anchorEl={anchorElm}
                 inox={selectedCardindex.current}
+
             />
         </>
     )
@@ -214,4 +171,5 @@ Calandertab.propTypes = {
     monthsh: PropTypes.any,
     yearsh: PropTypes.any,
     monthevent: PropTypes.any
+
 };

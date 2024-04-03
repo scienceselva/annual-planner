@@ -13,210 +13,22 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Weekview from './planner-comp/weekview';
 import Dayview from './planner-comp/dayview';
 
-import { getallEventTypes } from './planner-comp/dbutils';
+import { getallEventTypes, getallEvents } from './planner-comp/dbutils';
 
-// sample data from DB for each month
-
-const montheventDB = [
-    {
-        "dateFrom": "2024-03-02",
-        "dateTo": "2024-03-08",
-        "type": "Holiday",
-        "description": "Texas Independence Day",
-        "startTime": "00:00",
-        "endTime": "23:59",
-        "fullDayEvent": true,
-        "lastUpdateby": "username",
-        "lastUpdatedtm": "2024-03-02"
-    },
-    {
-        "dateFrom": "2024-03-10",
-        "dateTo": "",
-        "type": "Exam",
-        "description": "Midterm Exam 3",
-        "startTime": "11:30",
-        "endTime": "16:00",
-        "fullDayEvent": false,
-        "lastUpdateby": "username",
-        "lastUpdatedtm": "2024-03-02"
-    },
-    {
-        "dateFrom": "2024-03-10",
-        "dateTo": "",
-        "type": "Exam",
-        "description": "Midterm Exam 1",
-        "startTime": "10:00",
-        "endTime": "12:00",
-        "fullDayEvent": false,
-        "lastUpdateby": "username",
-        "lastUpdatedtm": "2024-03-02"
-    },
-    {
-        "dateFrom": "2024-03-10",
-        "dateTo": "",
-        "type": "Event",
-        "description": "Midterm Exam 2",
-        "startTime": "10:00",
-        "endTime": "12:00",
-        "fullDayEvent": false,
-        "lastUpdateby": "username",
-        "lastUpdatedtm": "2024-03-02"
-    },
-    {
-        "dateFrom": "2024-03-17",
-        "dateTo": "",
-        "type": "Event",
-        "description": "St. Patrick's Day Parade",
-        "startTime": "14:00",
-        "endTime": "15:30",
-        "fullDayEvent": false,
-        "lastUpdateby": "username",
-        "lastUpdatedtm": "2024-03-02"
-    },
-    {
-        "dateFrom": "2024-03-21",
-        "dateTo": "",
-        "type": "Seminar",
-        "description": "Marketing Workshop",
-        "startTime": "09:30",
-        "endTime": "11:30",
-        "fullDayEvent": false,
-        "lastUpdateby": "username",
-        "lastUpdatedtm": "2024-03-02"
-    },
-    {
-        "dateFrom": "2024-03-30",
-        "dateTo": "",
-        "type": "Event",
-        "description": "Fashion Show",
-        "startTime": "18:00",
-        "endTime": "20:00",
-        "fullDayEvent": false,
-        "lastUpdateby": "username",
-        "lastUpdatedtm": "2024-03-02"
-    },
-    {
-        "dateFrom": "2024-04-05",
-        "dateTo": "",
-        "type": "Holiday",
-        "description": "Easter Sunday",
-        "startTime": "00:00",
-        "endTime": "23:59",
-        "fullDayEvent": true,
-        "lastUpdateby": "username",
-        "lastUpdatedtm": "2024-03-02"
-    },
-    {
-        "dateFrom": "2024-04-12",
-        "dateTo": "",
-        "type": "Exam",
-        "description": "Final Exams Begin",
-        "startTime": "09:00",
-        "endTime": "11:30",
-        "fullDayEvent": false,
-        "lastUpdateby": "username",
-        "lastUpdatedtm": "2024-03-02"
-    },
-    {
-        "dateFrom": "2024-04-19",
-        "dateTo": "",
-        "type": "Event",
-        "description": "Technology Conference",
-        "startTime": "10:30",
-        "endTime": "12:30",
-        "fullDayEvent": false,
-        "lastUpdateby": "username",
-        "lastUpdatedtm": "2024-03-02"
-    },
-    {
-        "dateFrom": "2024-04-22",
-        "dateTo": "",
-        "type": "Seminar",
-        "description": "Leadership Development Program",
-        "startTime": "13:00",
-        "endTime": "15:00",
-        "fullDayEvent": false,
-        "lastUpdateby": "username",
-        "lastUpdatedtm": "2024-03-02"
-    },
-    {
-        "dateFrom": "2024-04-30",
-        "dateTo": "",
-        "type": "Event",
-        "description": "Art Exhibition Opening",
-        "startTime": "16:00",
-        "endTime": "17:30",
-        "fullDayEvent": false,
-        "lastUpdateby": "username",
-        "lastUpdatedtm": "2024-03-02"
-    },
-    {
-        "dateFrom": "2024-05-06",
-        "dateTo": "",
-        "type": "Holiday",
-        "description": "Cinco de Mayo",
-        "startTime": "00:00",
-        "endTime": "23:59",
-        "fullDayEvent": true,
-        "lastUpdateby": "username",
-        "lastUpdatedtm": "2024-03-02"
-    },
-    {
-        "dateFrom": "2024-05-13",
-        "dateTo": "",
-        "type": "Exam",
-        "description": "Final Exams End",
-        "startTime": "09:00",
-        "endTime": "10:30",
-        "fullDayEvent": false,
-        "lastUpdateby": "username",
-        "lastUpdatedtm": "2024-03-02"
-    },
-    {
-        "dateFrom": "2024-05-17",
-        "dateTo": "",
-        "type": "Event",
-        "description": "Food Festival",
-        "startTime": "12:00",
-        "endTime": "14:00",
-        "fullDayEvent": false,
-        "lastUpdateby": "username",
-        "lastUpdatedtm": "2024-03-02"
-    },
-    {
-        "dateFrom": "2024-05-22",
-        "dateTo": "",
-        "type": "Seminar",
-        "description": "Finance Workshop",
-        "startTime": "15:30",
-        "endTime": "17:00",
-        "fullDayEvent": false,
-        "lastUpdateby": "username",
-        "lastUpdatedtm": "2024-03-02"
-    },
-    {
-        "dateFrom": "2024-05-25",
-        "dateTo": "",
-        "type": "Event",
-        "description": "Music Concert",
-        "startTime": "19:00",
-        "endTime": "21:00",
-        "fullDayEvent": false,
-        "lastUpdateby": "username",
-        "lastUpdatedtm": "2024-03-02"
-    }
-]
+// main data items for storing types and event list
+let montheventDB = []
 let eventType = []
 
+
 export default function Planner() {
+
     let monthSelctionarray = []
-    // Sort the array by dateFrom and startTime
-    montheventDB.sort((a, b) => {
-        // Compare dateFrom first
+    let yearMMfetchdb = new Date()
+    
+    montheventDB.sort((a, b) => {    
         if (a.dateFrom !== b.dateFrom) {
             return a.dateFrom.localeCompare(b.dateFrom);
-        }
-        // If dateFrom is the same, compare startTime
+        }    
         return a.startTime.localeCompare(b.startTime);
     });
 
@@ -231,7 +43,10 @@ export default function Planner() {
         let dt = new Date(newValue)
         setSelectedmonth(dt.getMonth() + 1)
         setSelectedyear(dt.getFullYear())
-        setDateselect(dt)        
+        setDateselect(dt)            
+        yearMMfetchdb = dt   
+        handlemontNav()
+        
     };
 
     const handleAppbardateNav = (direction) => {
@@ -243,16 +58,14 @@ export default function Planner() {
             newDate.setMonth(newDate.getMonth() - 1);
         }
         setDateselect(newDate)        
-
+          
     }
 
     // for header
-
     let finddate = selectedMonth + '-' + '01' + '-' + selectedYear
     const dateSelected = new Date(finddate);
     let monthName = dateSelected.toLocaleString('default', { month: 'long' });
-    //console.log(dateSelect)
-
+        
     /**
      * get all events fot the month
      */
@@ -277,7 +90,7 @@ export default function Planner() {
 
     }
 
-    
+
 
     const [calview, setCalview] = React.useState('M');
 
@@ -285,21 +98,41 @@ export default function Planner() {
         setCalview(event.target.value);
     };
 
-    if(eventType.length > 0){
+    if ((eventType.length > 0) && (montheventDB.length > 0)) {
         monthSelctionarray = findRecordsByMonth()
+        localStorage.setItem('eventTypesColor', JSON.stringify(eventType));
     }
-    
+
+    const handleHomer = async () => {
+        let tp = []
+        console.log(tp)
+    }
+
+    const handlemontNav = () => {
+        
+       
+        async function getData() {
+            setLoading(true)
+            montheventDB = await getallEvents(yearMMfetchdb)
+            setLoading(false)
+        }
+        
+        getData()
+        
+    }
+
     useEffect(() => {
-        console.log("test")
 
         async function getClassData() {
             eventType = await getallEventTypes()
-            
+            const yearMM = selectedYear + '-' + selectedMonth            
+            montheventDB = await getallEvents(yearMM)
             setLoading(false)
         }
         if (isLoading) {
             getClassData()
         }
+
 
     }, []);
 
@@ -321,6 +154,7 @@ export default function Planner() {
                                         borderRadius: 1,
                                         border: '0px solid #c0c0c0'
                                     }}
+                                    onClick={handleHomer}
                                 />
                                 <Box
                                     sx={{
@@ -395,7 +229,7 @@ export default function Planner() {
                                 renderLoading={() => <DayCalendarSkeleton />}
                             />
                         </LocalizationProvider>
-                        <Typography variant='h5'> Up coming Events</Typography>
+                        <Typography variant='h5'> Events in the Month</Typography>
                         <Divider /><br />
                         {monthSelctionarray.map((monthValue, index) => (
                             <>
@@ -432,6 +266,7 @@ export default function Planner() {
                                         monthsh={selectedMonth}
                                         yearsh={selectedYear}
                                         monthevent={montheventDB}
+                                        
                                     />
                                 case 'W':
                                     return <Weekview
@@ -448,6 +283,7 @@ export default function Planner() {
                                         monthsh={selectedMonth}
                                         yearsh={selectedYear}
                                         monthevent={montheventDB}
+                                        
                                     />
                             }
                         })()}
