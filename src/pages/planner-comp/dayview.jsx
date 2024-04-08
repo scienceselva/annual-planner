@@ -9,7 +9,7 @@ import Popupevent from './popupevent';
 const dayArr = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 const timeArr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
-export default function Dayview({ SelectedDateX, eventArr }) {
+export default function Dayview({ SelectedDateX, eventArr, resetRender }) {
 
     const givenDate = new Date(SelectedDateX)
     const month1 = String(givenDate.getMonth() + 1).padStart(2, '0');
@@ -243,7 +243,7 @@ export default function Dayview({ SelectedDateX, eventArr }) {
             <Popupevent
                 dataPass={[...dummyArray]}
                 handleClosex={handleClosepop}
-                handleClickx={handleClick}
+                handleClickx={resetRender}
                 anchorEl={anchorElm}
                 inox={selectedCardindex.current}
 
@@ -256,4 +256,5 @@ Dayview.propTypes = {
     SelectedDateX: PropTypes.any,
     eventArr: PropTypes.any,
     handlePopupedit: PropTypes.func,
+    resetRender: PropTypes.func
 };

@@ -2,15 +2,17 @@ import axios from 'axios';
 import * as React from 'react';
 import { useState } from 'react';
 
+//const homeURL = "https://annualplanner-service.onrender.com/"
+const homeURL = import.meta.env.VITE_BASE_ENDPOINT
 /**
  * @returns []list of events
  * to get all event types 
  */
 export async function getallEventTypes() {
-
+console.log(homeURL)
   let response = []
   try {
-    const baseUrl = 'http://localhost:3000/apstatic'
+    const baseUrl = `${homeURL}apstatic`
     response = await axios.get(baseUrl, {
       headers: {
         'Content-Type': 'application/json'
@@ -49,7 +51,7 @@ export async function getallEvents(month) {
 
   let response = []
   try {
-    const baseUrl = `http://localhost:3000/apdata/${month}`
+    const baseUrl = `${homeURL}apdata/${month}`
     response = await axios.get(baseUrl, {
       headers: {
         'Content-Type': 'application/json'
@@ -91,7 +93,7 @@ export async function saveNewevent(eventData) {
   let response = []
   try {
 
-    const baseUrl = 'http://localhost:3000/apdata'
+    const baseUrl = `${homeURL}apdata`
     response = await axios.post(baseUrl, eventData, {
       headers: {
 
@@ -127,7 +129,7 @@ export async function updateEvent(eventData) {
   let response = []
   try {
 
-    const baseUrl = 'http://localhost:3000/apdata'
+    const baseUrl = `${homeURL}apdata`
     response = await axios.put(baseUrl, JSON.stringify(eventData), {
       headers: {
 
@@ -161,7 +163,7 @@ export async function deleteEvent(eventID) {
   let response = []
   try {
 
-    const baseUrl = `http://localhost:3000/apdata/${eventID}`
+    const baseUrl = `${homeURL}apdata/${eventID}`
     response = await axios.delete(baseUrl, JSON.stringify(eventID), {
       headers: {
 

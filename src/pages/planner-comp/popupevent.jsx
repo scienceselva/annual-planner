@@ -217,7 +217,8 @@ export default function Popupevent({ dataPass, handleClosex, anchorEl, inox, han
 
 
     const updatetheDB = async () => {
-
+        //console.log(" new or update id --->",formData)
+        
         let resp = ''
         // when the action is a new event
         if (!formData[inox]._id) {
@@ -233,12 +234,14 @@ export default function Popupevent({ dataPass, handleClosex, anchorEl, inox, han
         } else {
             setSnackmessage(false)
         }
-        handleClick()
-        handleClosex()
+        handleClick()        
         handleClickx()
+        handleClosex()
     }
 
     const handleUpdates = async (flag) => {
+        
+        //console.log(" delete id --->",{...formData})
         let resp = ''
         if (flag === 2) {
             resp = await deleteEvent(formData[inox]._id)
@@ -249,9 +252,9 @@ export default function Popupevent({ dataPass, handleClosex, anchorEl, inox, han
             setSnackmessage(false)
         }
         if (flag === 2) {
-            handleClick()
-            handleClosex()
+            handleClick()            
             handleClickx()
+            handleClosex()
         }
     };
 

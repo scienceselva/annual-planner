@@ -285,11 +285,13 @@ export default function Planner() {
                                     return <Weekview
                                         SelectedDateX={dateSelect}
                                         eventArr={montheventDB}
+                                        resetRender={hardresetRender}
                                     />
                                 case 'D':
                                     return <Dayview
                                         SelectedDateX={dateSelect}
                                         eventArr={montheventDB}
+                                        resetRender={hardresetRender}
                                     />
                                 default:
                                     return <Calandertab

@@ -9,7 +9,7 @@ import Popupevent from './popupevent';
 const dayArr = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 const timeArr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
-export default function Weekview({ SelectedDateX, eventArr }) {
+export default function Weekview({ SelectedDateX, eventArr, resetRender }) {
 
 
     const givenDate = new Date(SelectedDateX)
@@ -49,6 +49,7 @@ export default function Weekview({ SelectedDateX, eventArr }) {
         setAnchorEl(event.currentTarget)
         //setSelectedCindex(index)
         selectedCardindex.current = index
+        //resetRender()
 
     };
 
@@ -86,7 +87,7 @@ export default function Weekview({ SelectedDateX, eventArr }) {
         dummyArray[0].lastUpdateby = dayDetails.lastUpdateby
         dummyArray[0].lastUpdatedtm = dayDetails.lastUpdatedtm
         dummyArray[0].level = dayDetails.level
-
+        
         handleClick(e, 0)
 
     }
@@ -103,6 +104,7 @@ export default function Weekview({ SelectedDateX, eventArr }) {
         dummyArray[0].lastUpdateby = ""
         dummyArray[0].lastUpdatedtm = ""
         dummyArray[0].level = ""
+        
     }
     /**
      *   get the 7 day dates to show in the week view   -------------------------------------------------
@@ -162,7 +164,10 @@ export default function Weekview({ SelectedDateX, eventArr }) {
                 onClick={(e) => handleaddNewEvent(e, masterIndex, subIndex, flag)}
             ></div>
         } else {
-            finalRender = <div style={{ height: '60px', borderBottom: '1px solid #c0c0c0', marginTop: '0px', display: 'flex' }}>
+            finalRender = <div style={{ height: '60px', borderBottom: '1px solid #c0c0c0', marginTop: '0px', display: 'flex' }}
+                id={`${monthsh}${subIndex}`}
+                onClick={(e) => handleaddNewEvent(e, masterIndex, subIndex, flag)}
+            >
                 <Stack direction="row" spacing={0}>{timeCalculator(masterIndex, subIndex, flag)}</Stack>
             </div>
         }
@@ -219,7 +224,7 @@ export default function Weekview({ SelectedDateX, eventArr }) {
                         display: 'flex',
 
                     }}
-                    onClick={(e) => handleaddEditEvent(e, inScopeitemsarr[masterIndex][i])}
+                    onClick={(e) => handleaddEditEvent(e, { ...inScopeitemsarr[masterIndex][i] })}
                 >
                     <Typography style={{ padding: '5px' }} variant='h6'>
                         {inScopeitemsarr[masterIndex][i].type}
@@ -289,7 +294,7 @@ export default function Weekview({ SelectedDateX, eventArr }) {
             <Popupevent
                 dataPass={[...dummyArray]}
                 handleClosex={handleClosepop}
-                handleClickx={handleClick}
+                handleClickx={resetRender}
                 anchorEl={anchorElm}
                 inox={selectedCardindex.current}
 
@@ -301,5 +306,6 @@ export default function Weekview({ SelectedDateX, eventArr }) {
 
 Weekview.propTypes = {
     SelectedDateX: PropTypes.any,
-    eventArr: PropTypes.any
+    eventArr: PropTypes.any,
+    resetRender: PropTypes.func
 };
