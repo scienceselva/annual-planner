@@ -9,13 +9,25 @@ import { Box, Typography } from "@mui/material";
 import Daycard from './day-card';
 import Popupevent from './popupevent';
 
-export default function Calandertab({ monthsh, yearsh, monthevent }) {
+export default function Calandertab({ monthsh, yearsh, monthevent,resetRender }) {
     /**
     *     defaults or constants
     */
     const dayArr = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
     let montharr = []
     let monthName = ''
+
+    /**
+     * to force an rerender after add , update & delete   
+     *  */ 
+
+    const handleClickRender = () => {
+        resetRender()        
+    }
+
+    const updatemasterData = () => {
+        resetRender()        
+    }
 
     /**
      *    --------------------------------------------- new event popup
@@ -32,7 +44,8 @@ export default function Calandertab({ monthsh, yearsh, monthevent }) {
             fullDayEvent: false,
             lastUpdateby: "",
             lastUpdatedtm: "",
-            level: ""
+            level: "",
+            colorScheme: ""
         }
     ])
     /**
@@ -110,9 +123,11 @@ export default function Calandertab({ monthsh, yearsh, monthevent }) {
         setAnchorEl(null);
     };
 
-
+    /**
+     *   -------------------------------------------------------------------------------------
+     */
     const handleaddNewEvent = (e, daySel) => {
-        dummyArray[0].dateFrom = `${yearsh}-${monthsh}-${daySel}`        
+        dummyArray[0].dateFrom = `${yearsh}-${monthsh}-${daySel}`
         let elementID = parseInt(e.target.id)
         if ((daySel > 0) & (!isNaN(elementID))) {
             handleClick(e, 0)
@@ -124,7 +139,7 @@ export default function Calandertab({ monthsh, yearsh, monthevent }) {
         <>
             <Box sx={{ padding: '15px' }}>
                 <table style={{ border: '1px solid #c0c0c0', borderCollapse: 'collapse', width: '100%', minHeight: '90vh' }}>
-                    <tr>
+                    <thead>
                         {dayArr.map(dayVal => (
                             <td
                                 key={dayVal}
@@ -133,25 +148,28 @@ export default function Calandertab({ monthsh, yearsh, monthevent }) {
                                 <Typography variant='body2' color={'primary.dark'}>{dayVal}</Typography>
                             </td>
                         ))}
-                    </tr>
-                    {montharr.map((monX, index) => (
-                        <tr key={index}>
-                            {monX.map((dayNum, index) => (
-                                <td id={`${monthsh}${dayNum}`}
-                                    style={{ border: '1px solid #C0C0C0', backgroundColor: '#FFF', padding: '5px', verticalAlign: 'top' }}
-                                    onClick={(e) => handleaddNewEvent(e, dayNum)}>
-                                    {(dayNum === 0) ? '' :
-                                        <Daycard
-                                            dayX={dayNum}
-                                            eventArr={findRecordsByDate(yearsh, monthsh, dayNum)}
-                                            sx={{ marginTop: '0px' }}
-                                        />}
-                                </td>
+                    </thead>
+                    <tbody>
+                        {montharr.map((monX, index) => (
+                            <tr key={index}>
+                                {monX.map((dayNum, index) => (
+                                    <td id={`${monthsh}${dayNum}`}
+                                        style={{ border: '1px solid #C0C0C0', backgroundColor: '#FFF', padding: '5px', verticalAlign: 'top' }}
+                                        onClick={(e) => handleaddNewEvent(e, dayNum)}>
+                                        {(dayNum === 0) ? '' :
+                                            <Daycard
+                                                dayX={dayNum}
+                                                eventArr={findRecordsByDate(yearsh, monthsh, dayNum)}
+                                                sx={{ marginTop: '0px' }}
+                                                updateMasterarr={updatemasterData}
+                                            />}
+                                    </td>
 
-                            ))}
+                                ))}
 
-                        </tr>
-                    ))}
+                            </tr>
+                        ))}
+                    </tbody>
                 </table>
 
             </Box>
@@ -159,7 +177,7 @@ export default function Calandertab({ monthsh, yearsh, monthevent }) {
             <Popupevent
                 dataPass={[...dummyArray]}
                 handleClosex={handleClosepop}
-                handleClickx={handleClick}
+                handleClickx={handleClickRender}
                 anchorEl={anchorElm}
                 inox={selectedCardindex.current}
 

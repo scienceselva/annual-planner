@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
+import { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { Stack } from '@mui/material';
+import Popupevent from './popupevent';
 
 const dayArr = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 const timeArr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
@@ -13,6 +15,91 @@ export default function Dayview({ SelectedDateX, eventArr }) {
     const month1 = String(givenDate.getMonth() + 1).padStart(2, '0');
     const day1 = String(givenDate.getDate()).padStart(2, '0');
     const passedDate = givenDate.getFullYear() + "-" + month1 + "-" + day1
+
+
+
+    /**
+    *  dummy array         //////////////     pop up related code
+    */
+    const [dummyArray, setDummyarray] = useState([
+        {
+            _id: "",
+            dateFrom: "",
+            dateTo: "",
+            type: "",
+            description: "",
+            startTime: "00:00",
+            endTime: "23:59",
+            fullDayEvent: false,
+            lastUpdateby: "",
+            lastUpdatedtm: "",
+            level: ""
+        }
+    ])
+
+
+    const [anchorElm, setAnchorEl] = React.useState(false);
+
+    //const [selectedCardindex, setSelectedCindex] = React.useState(0);
+    let selectedCardindex = React.useRef(0);
+
+    const handleClick = (event, index) => {
+
+        setAnchorEl(event.currentTarget)
+        //setSelectedCindex(index)
+        selectedCardindex.current = index
+
+    };
+
+    const handleClosepop = () => {
+        resetarrayMaker()
+        setAnchorEl(null);
+    };
+
+    const handleaddNewEvent = (e, daySel, subIndex, flag) => {
+
+        dummyArray[0].dateFrom = passedDate
+        if (flag === 'PM') {
+            subIndex += 12
+        }
+        dummyArray[0].startTime = `${subIndex}:00`
+        dummyArray[0].endTime = `${subIndex + 1}:00`        
+        handleClick(e, 0)
+
+
+    }
+
+    const handleaddEditEvent = (e, dayDetails) => {
+
+        dummyArray[0]._id = dayDetails._id
+        dummyArray[0].dateFrom = dayDetails.dateFrom
+        dummyArray[0].dateTo = dayDetails.dateTo
+        dummyArray[0].type = dayDetails.type
+        dummyArray[0].description = dayDetails.description
+        dummyArray[0].startTime = dayDetails.startTime
+        dummyArray[0].endTime = dayDetails.endTime
+        dummyArray[0].fullDayEvent = dayDetails.fullDayEvent
+        dummyArray[0].lastUpdateby = dayDetails.lastUpdateby
+        dummyArray[0].lastUpdatedtm = dayDetails.lastUpdatedtm
+        dummyArray[0].level = dayDetails.level
+
+        handleClick(e, 0)
+
+    }
+
+    const resetarrayMaker = () => {
+        dummyArray[0]._id = ""
+        dummyArray[0].dateFrom = ""
+        dummyArray[0].dateTo = ""
+        dummyArray[0].type = ""
+        dummyArray[0].description = ""
+        dummyArray[0].startTime = "00:00"
+        dummyArray[0].endTime = "23:59"
+        dummyArray[0].fullDayEvent = false
+        dummyArray[0].lastUpdateby = ""
+        dummyArray[0].lastUpdatedtm = ""
+        dummyArray[0].level = ""
+    }
 
     // find the records for given date 
     const findRecordsByDate = () => {
@@ -28,9 +115,14 @@ export default function Dayview({ SelectedDateX, eventArr }) {
 
         let finalRender = ""
         if (inScopeitemsarr[masterIndex].length <= 0) {
-            finalRender = <div style={{ height: '60px', borderBottom: '1px solid #c0c0c0', marginTop: '0px', display: 'flex' }}></div>
+            finalRender = <div style={{ height: '60px', borderBottom: '1px solid #c0c0c0', marginTop: '0px', display: 'flex', backgroundColor: '@c0c0c0' }}
+                id={`${month1}${subIndex}`}
+                onClick={(e) => handleaddNewEvent(e, masterIndex, subIndex, flag)}
+            ></div>
         } else {
-            finalRender = <div style={{ height: '60px', borderBottom: '1px solid #c0c0c0', marginTop: '0px', display: 'flex' }}>
+            finalRender = <div style={{ height: '60px', borderBottom: '1px solid #c0c0c0', marginTop: '0px', display: 'flex', backgroundColor: '@c0c0c0' }}
+                onClick={(e) => handleaddNewEvent(e, masterIndex, subIndex, flag)}
+            >
                 <Stack direction="row" spacing={0}>{timeCalculator(masterIndex, subIndex, flag)}</Stack>
             </div>
         }
@@ -56,11 +148,14 @@ export default function Dayview({ SelectedDateX, eventArr }) {
 
         for (let i = 0; i < inScopeitemsarr[masterIndex].length; i += 1) {
 
+            if (inScopeitemsarr[masterIndex][i].fullDayEvent) {
+                inScopeitemsarr[masterIndex][i].startTime = "00:00"
+                inScopeitemsarr[masterIndex][i].endTime = "23:59"
+            }
+
             let [hoursF, minutesF] = inScopeitemsarr[masterIndex][i].startTime.split(":");
             let [hoursT, minutesT] = inScopeitemsarr[masterIndex][i].endTime.split(":");
             let schemeColor = inScopeitemsarr[masterIndex][i].colorScheme
-
-
 
             let fromTime = parseInt(hoursF, 10) * 3600000 + parseInt(minutesF, 10) * 60000;
             let toTime = parseInt(hoursT, 10) * 3600000 + parseInt(minutesT, 10) * 60000;
@@ -80,9 +175,9 @@ export default function Dayview({ SelectedDateX, eventArr }) {
                         borderRadius: '10px',
                         backgroundColor: `rgb(from ${schemeColor} r g b / 45%)`,
                         display: 'flex',
-
-
-                    }}>
+                    }}
+                    onClick={(e) => handleaddEditEvent(e, inScopeitemsarr[masterIndex][i])}
+                >
                     <Typography style={{ padding: '5px' }} variant='h6'>
                         {inScopeitemsarr[masterIndex][i].type}
                     </Typography>
@@ -145,6 +240,14 @@ export default function Dayview({ SelectedDateX, eventArr }) {
 
                 </tr>
             </table>
+            <Popupevent
+                dataPass={[...dummyArray]}
+                handleClosex={handleClosepop}
+                handleClickx={handleClick}
+                anchorEl={anchorElm}
+                inox={selectedCardindex.current}
+
+            />
         </>
     )
 }

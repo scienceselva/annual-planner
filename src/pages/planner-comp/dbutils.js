@@ -29,7 +29,6 @@ export async function getallEventTypes() {
       console.error('Error during request setup:', error.message);
     }
   }
-  console.log("in utils")
   return response.data[0].eventTypes
 }
 
@@ -87,7 +86,7 @@ export async function getallEvents(month) {
    */
 
 export async function saveNewevent(eventData) {
-  delete eventData._id; 
+  delete eventData._id;
   //console.log(eventData) 
   let response = []
   try {
@@ -113,8 +112,8 @@ export async function saveNewevent(eventData) {
     }
   }
 
-  console.log(response.status)
-  return response.status
+  //console.log(response.status)
+  return response
 }
 
 
@@ -124,8 +123,7 @@ export async function saveNewevent(eventData) {
 */
 
 export async function updateEvent(eventData) {
-  delete eventData.__v; 
-  console.log(eventData)
+  delete eventData.__v;
   let response = []
   try {
 
@@ -150,8 +148,7 @@ export async function updateEvent(eventData) {
     }
   }
 
-  console.log(response.status)
-  return response.status
+  return response
 }
 
 
@@ -160,8 +157,7 @@ export async function updateEvent(eventData) {
 */
 
 export async function deleteEvent(eventID) {
-  
-  console.log(eventID)
+
   let response = []
   try {
 
@@ -186,6 +182,5 @@ export async function deleteEvent(eventID) {
     }
   }
 
-  console.log(response.status)
-  return response.status
+  return response
 }

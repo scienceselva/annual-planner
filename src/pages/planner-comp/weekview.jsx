@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
 import * as React from 'react';
+import { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { Divider, Stack } from '@mui/material';
+import Popupevent from './popupevent';
 
 const dayArr = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 const timeArr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
@@ -11,10 +13,97 @@ export default function Weekview({ SelectedDateX, eventArr }) {
 
 
     const givenDate = new Date(SelectedDateX)
+    const yearsh = givenDate.getFullYear()
+    const monthsh = givenDate.getMonth() + 1
 
     let weekDateArr = []
     let weekDayArr = []
 
+    /**
+     *  dummy array         //////////////     pop up related code
+     */
+    const [dummyArray, setDummyarray] = useState([
+        {
+            _id: "",
+            dateFrom: "",
+            dateTo: "",
+            type: "",
+            description: "",
+            startTime: "00:00",
+            endTime: "23:59",
+            fullDayEvent: false,
+            lastUpdateby: "",
+            lastUpdatedtm: "",
+            level: ""
+        }
+    ])
+
+
+    const [anchorElm, setAnchorEl] = React.useState(false);
+
+    //const [selectedCardindex, setSelectedCindex] = React.useState(0);
+    let selectedCardindex = React.useRef(0);
+
+    const handleClick = (event, index) => {
+
+        setAnchorEl(event.currentTarget)
+        //setSelectedCindex(index)
+        selectedCardindex.current = index
+
+    };
+
+    const handleClosepop = () => {
+        resetarrayMaker();
+        setAnchorEl(null);
+    };
+
+    const handleaddNewEvent = (e, daySel, subIndex, flag) => {
+
+        dummyArray[0].dateFrom = weekDateArr[daySel]
+        if (flag === 'PM') {
+            subIndex += 12
+        }
+        dummyArray[0].startTime = `${subIndex}:00`
+        dummyArray[0].endTime = `${subIndex + 1}:00`
+        let elementID = parseInt(e.target.id)
+        console.log(dummyArray, elementID, daySel)
+
+        handleClick(e, 0)
+
+
+    }
+
+    const handleaddEditEvent = (e, dayDetails) => {
+
+        dummyArray[0]._id = dayDetails._id
+        dummyArray[0].dateFrom = dayDetails.dateFrom
+        dummyArray[0].dateTo = dayDetails.dateTo
+        dummyArray[0].type = dayDetails.type
+        dummyArray[0].description = dayDetails.description
+        dummyArray[0].startTime = dayDetails.startTime
+        dummyArray[0].endTime = dayDetails.endTime
+        dummyArray[0].fullDayEvent = dayDetails.fullDayEvent
+        dummyArray[0].lastUpdateby = dayDetails.lastUpdateby
+        dummyArray[0].lastUpdatedtm = dayDetails.lastUpdatedtm
+        dummyArray[0].level = dayDetails.level
+
+        handleClick(e, 0)
+
+    }
+
+    const resetarrayMaker = () => {
+        dummyArray[0]._id = ""
+        dummyArray[0].dateFrom = ""
+        dummyArray[0].dateTo = ""
+        dummyArray[0].type = ""
+        dummyArray[0].description = ""
+        dummyArray[0].startTime = "00:00"
+        dummyArray[0].endTime = "23:59"
+        dummyArray[0].fullDayEvent = false
+        dummyArray[0].lastUpdateby = ""
+        dummyArray[0].lastUpdatedtm = ""
+        dummyArray[0].level = ""
+    }
     /**
      *   get the 7 day dates to show in the week view   -------------------------------------------------
      */
@@ -45,7 +134,7 @@ export default function Weekview({ SelectedDateX, eventArr }) {
     calculateWeekdays()
 
     /**
-     *   get the event matching teh 7 days from main array ------------------------------------------------------
+     *   get the event matching the 7 days from main array ------------------------------------------------------
      */
 
     let inScopeitemsarr = []
@@ -68,7 +157,10 @@ export default function Weekview({ SelectedDateX, eventArr }) {
 
         let finalRender = ""
         if (inScopeitemsarr[masterIndex].length <= 0) {
-            finalRender = <div style={{ height: '60px', borderBottom: '1px solid #c0c0c0', marginTop: '0px', display: 'flex' }}></div>
+            finalRender = <div style={{ height: '60px', borderBottom: '1px solid #c0c0c0', marginTop: '0px', display: 'flex' }}
+                id={`${monthsh}${subIndex}`}
+                onClick={(e) => handleaddNewEvent(e, masterIndex, subIndex, flag)}
+            ></div>
         } else {
             finalRender = <div style={{ height: '60px', borderBottom: '1px solid #c0c0c0', marginTop: '0px', display: 'flex' }}>
                 <Stack direction="row" spacing={0}>{timeCalculator(masterIndex, subIndex, flag)}</Stack>
@@ -96,6 +188,11 @@ export default function Weekview({ SelectedDateX, eventArr }) {
 
         for (let i = 0; i < inScopeitemsarr[masterIndex].length; i += 1) {
 
+            if (inScopeitemsarr[masterIndex][i].fullDayEvent) {
+                inScopeitemsarr[masterIndex][i].startTime = "00:00"
+                inScopeitemsarr[masterIndex][i].endTime = "23:59"
+            }
+
             let [hoursF, minutesF] = inScopeitemsarr[masterIndex][i].startTime.split(":");
             let [hoursT, minutesT] = inScopeitemsarr[masterIndex][i].endTime.split(":");
             let schemeColor = inScopeitemsarr[masterIndex][i].colorScheme
@@ -121,13 +218,15 @@ export default function Weekview({ SelectedDateX, eventArr }) {
                         backgroundColor: `rgb(from ${schemeColor} r g b / 45%)`,
                         display: 'flex',
 
-                    }}>
+                    }}
+                    onClick={(e) => handleaddEditEvent(e, inScopeitemsarr[masterIndex][i])}
+                >
                     <Typography style={{ padding: '5px' }} variant='h6'>
                         {inScopeitemsarr[masterIndex][i].type}
                     </Typography>
                     <Typography style={{ padding: '5px' }} variant='inherit'>
                         {inScopeitemsarr[masterIndex][i].description}
-                    </Typography>                    
+                    </Typography>
                 </div>
                 finalRenderDetails.push(renderDetails)
             }
@@ -138,7 +237,7 @@ export default function Weekview({ SelectedDateX, eventArr }) {
     }
 
 
-    //console.log(inScopeitemsarr)           
+    //console.log(inScopeitemsarr)
 
     return (
         <>
@@ -177,7 +276,6 @@ export default function Weekview({ SelectedDateX, eventArr }) {
                         <td
                             align="center"
                             style={{ width: '200px', borderRight: '1px solid #c0c0c0', color: 'primary.dark', borderRadius: '5px', padding: '0px' }}>
-
                             {timeArr.map((timeVal, index) => (
                                 renderItems(index1, index, 'AM')
                             ))}
@@ -188,6 +286,14 @@ export default function Weekview({ SelectedDateX, eventArr }) {
                     ))}
                 </tr>
             </table>
+            <Popupevent
+                dataPass={[...dummyArray]}
+                handleClosex={handleClosepop}
+                handleClickx={handleClick}
+                anchorEl={anchorElm}
+                inox={selectedCardindex.current}
+
+            />
         </>
     )
 }

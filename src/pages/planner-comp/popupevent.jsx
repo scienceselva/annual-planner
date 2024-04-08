@@ -218,30 +218,32 @@ export default function Popupevent({ dataPass, handleClosex, anchorEl, inox, han
 
     const updatetheDB = async () => {
 
-        let status = 500
+        let resp = ''
         // when the action is a new event
         if (!formData[inox]._id) {
             //console.log({ ...newData[0] })            
-            status = await saveNewevent({ ...newData[0] })
+            resp = await saveNewevent({ ...newData[0] })
         } else {
             //console.log({ ...newData[0] })
-            status = await updateEvent({ ...newData[0] })
+            resp = await updateEvent({ ...newData[0] })
         }
-        if ((status === 200) || (status === 201)) {
+
+        if ((resp.status === 200) || (resp.status === 201)) {
             setSnackmessage(true)
         } else {
             setSnackmessage(false)
         }
         handleClick()
         handleClosex()
+        handleClickx()
     }
 
     const handleUpdates = async (flag) => {
-        let status = 500
+        let resp = ''
         if (flag === 2) {
-            status = await deleteEvent(formData[inox]._id)
+            resp = await deleteEvent(formData[inox]._id)
         }
-        if (status === 200) {
+        if (resp.status === 200) {
             setSnackmessage(true)
         } else {
             setSnackmessage(false)
@@ -249,6 +251,7 @@ export default function Popupevent({ dataPass, handleClosex, anchorEl, inox, han
         if (flag === 2) {
             handleClick()
             handleClosex()
+            handleClickx()
         }
     };
 
@@ -309,23 +312,14 @@ export default function Popupevent({ dataPass, handleClosex, anchorEl, inox, han
         setSnackstatus(false);
     };
 
-    const action = (
-        <React.Fragment>
-            <Button color="secondary" size="small" onClick={handleClose}>
-                Dismiss
-            </Button>
-            <IconButton
-                size="small"
-                aria-label="close"
-                color="inherit"
-                onClick={handleClose}
-            >
-                <CloseIcon fontSize="small" />
-            </IconButton>
-        </React.Fragment>
-    );
+    // this flag control the popup 
 
-
+    const todayDt = new Date()
+    const givenDT = new Date(formData[inox].dateFrom)
+    let indicateOldDate = true
+    if (givenDT < todayDt) {
+        indicateOldDate = false
+    }
 
     return (
         <>
@@ -344,6 +338,7 @@ export default function Popupevent({ dataPass, handleClosex, anchorEl, inox, han
                     horizontal: 'right',
                 }}
             >
+
                 <Box sx={{ padding: '20px', maxWidth: '400px' }}>
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
@@ -351,19 +346,9 @@ export default function Popupevent({ dataPass, handleClosex, anchorEl, inox, han
                         </Grid>
                         <Grid item xs={6}>
                             <Box sx={{ padding: '0px' }}>
-
                                 <IconButton aria-label="delete" size="medium" sx={{ float: 'right' }} onClick={handleClosex}>
                                     <Tooltip title="Close">  <CancelOutlinedIcon fontSize="inherit" /> </Tooltip>
                                 </IconButton>
-
-                                <IconButton aria-label="delete" size="medium" sx={{ float: 'right' }} onClick={(e) => handleUpdates(1)}>
-                                    <Tooltip title="Edit"><EditOutlinedIcon fontSize="inherit" /></Tooltip>
-                                </IconButton>
-
-                                <IconButton aria-label="delete" size="medium" sx={{ float: 'right' }} onClick={(e) => handleUpdates(2)}>
-                                    <Tooltip title="Delete"> <DeleteOutlineOutlinedIcon fontSize="inherit" /></Tooltip>
-                                </IconButton>
-
                             </Box>
                         </Grid>
                     </Grid>
@@ -458,9 +443,24 @@ export default function Popupevent({ dataPass, handleClosex, anchorEl, inox, han
                         </Grid>
                     </Grid>
                     <br />
-                    <Button variant="outlined" onClick={handleUpdatedate} sx={{ float: 'right' }}>Update</Button>
+                    <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                            {formData[inox]._id ?
+                                (indicateOldDate ? <Button variant="outlined" onClick={(e) => handleUpdates(2)} color="error" >Delete</Button> : null)
+
+                                : null}
+                        </Grid>
+                        <Grid item xs={6}>
+                            {indicateOldDate ?
+                                <Button variant="outlined" onClick={handleUpdatedate} sx={{ float: 'right' }}>Update</Button>
+                                :
+                                <Typography variant='h6' color={'primary.dark'}> Not Possible to Change Past Events </Typography>
+                            }
+                        </Grid>
+                    </Grid>
                     <br /><br />
                 </Box >
+
             </Popover>
             <Snackbar
                 open={snackStatus}

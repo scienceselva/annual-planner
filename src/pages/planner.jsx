@@ -32,21 +32,21 @@ export default function Planner() {
         return a.startTime.localeCompare(b.startTime);
     });
 
+    
     const [isLoading, setLoading] = useState(true);
 
     const [dateSelect, setDateselect] = useState(new Date());
     const [selectedMonth, setSelectedmonth] = useState(new Date().getMonth() + 1)
     const [selectedYear, setSelectedyear] = useState(new Date().getFullYear())
 
-    const handleDatechange = (newValue) => {
-
+    const handleDatechange = (newValue) => {        
         let dt = new Date(newValue)
         setSelectedmonth(dt.getMonth() + 1)
         setSelectedyear(dt.getFullYear())
         setDateselect(dt)            
         yearMMfetchdb = dt   
         handlemontNav()
-        
+        localStorage.setItem('currentDateView', yearMMfetchdb);        
     };
 
     const handleAppbardateNav = (direction) => {
@@ -83,7 +83,11 @@ export default function Planner() {
         for (let i = 0; i < filteredRecords.length; i += 1) {
             let type = filteredRecords[i].type
             let matchEvent = eventType.find(event => event.type === type);
+            if(matchEvent.colorScheme){
             filteredRecords[i].colorScheme = matchEvent.colorScheme
+            }else{
+                filteredRecords[i].colorScheme = '#E7E9EB'
+            }
         }
 
         return filteredRecords;
@@ -120,6 +124,17 @@ export default function Planner() {
         getData()
         
     }
+
+    // integer state to force rerender ---
+    const [value, setValue] = useState(0);     
+    
+    const hardresetRender = () => {        
+        yearMMfetchdb = window.localStorage.getItem('currentDateView')   
+        setLoading(true)
+        handlemontNav()
+        setValue(value => value + 1);
+    }
+    // ------------------------------------
 
     useEffect(() => {
 
@@ -159,9 +174,7 @@ export default function Planner() {
                                 <Box
                                     sx={{
                                         width: '150px',
-                                        padding: '0px',
-                                        borderRadius: 2,
-                                        border: '1px solid #c0c0c0',
+                                        padding: '0px'                                        
                                     }}
                                 >
                                     <Typography variant='body1' color={'primary.dark'} sx={{ padding: '15px' }}>Annual Planner</Typography>
@@ -266,7 +279,7 @@ export default function Planner() {
                                         monthsh={selectedMonth}
                                         yearsh={selectedYear}
                                         monthevent={montheventDB}
-                                        
+                                        resetRender={hardresetRender}
                                     />
                                 case 'W':
                                     return <Weekview
@@ -283,7 +296,7 @@ export default function Planner() {
                                         monthsh={selectedMonth}
                                         yearsh={selectedYear}
                                         monthevent={montheventDB}
-                                        
+                                        resetRender={hardresetRender}
                                     />
                             }
                         })()}
