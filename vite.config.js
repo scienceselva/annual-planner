@@ -4,9 +4,7 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  optimizeDeps: {
-    include: ['@mui/material/Tooltip', '@emotion/styled'],
-  },
+  
   resolve: {
     alias: [
       {
